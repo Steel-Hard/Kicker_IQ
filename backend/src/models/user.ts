@@ -1,0 +1,49 @@
+import mongoose, { mongo, SchemaDefinitionProperty } from 'mongoose';
+
+const userSchema = new mongoose.Schema({
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
+  avatar: String,
+  name: { type: String, require: true },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: [
+      {
+        validator: function (e: string) {
+          return /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(e);
+        },
+        message: (e: SchemaDefinitionProperty) =>
+          `${e.toString()} não é um email valido.`,
+      },
+      {
+        validator: async (value: string) => {
+          const existing = await mongoose.models.User.findOne({ email: value });
+
+          return !existing;
+        },
+        message: 'Esse é um e-mail já registrado.',
+      },
+    ],
+  },
+  password: { type: String, min: 6, max: 12 },
+  phoneNumber: { type: String, require: false },
+  pushToken: { type: String, require: false },
+  authProvider: {
+    type: String,
+    enum: ['local', 'google'],
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+const userModel = mongoose.model('User', userSchema);
+
+export default userModel;
