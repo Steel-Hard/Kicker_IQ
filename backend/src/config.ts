@@ -8,6 +8,7 @@ const {
   CLOUDNARY_API_SECRET,
   CLOUDNARY_NAME,
   MONGODB_URI,
+  MODEL_SERVICE_URL,
 } = process.env;
 
 if (!CLIENT_ID) {
@@ -20,4 +21,5 @@ export const config = {
   CLOUDNARY_API_SECRET,
   CLOUDNARY_NAME,
   MONGODB_URI,
+  MODEL_SERVICE_URL: MODEL_SERVICE_URL || 'http://localhost:3001',
 };
