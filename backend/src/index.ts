@@ -2,7 +2,7 @@ import mongo from 'mongoose';
 import app from './app';
 import { config } from './config';
 
-const URI = config.MONGODB_URI || 'mongodb://localhost:27017/vesta';
+const URI = config.MONGODB_URI || 'mongodb://localhost:27017/kicker';
 
 mongo
   .connect(URI, { serverSelectionTimeoutMS: 30000 })

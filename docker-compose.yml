@@ -1,0 +1,65 @@
+services:
+  # Banco de Dados para o MicroserviÃ§o de IA
+  postgres-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: kicker_iq_model
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Banco de Dados para o Backend Principal
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  # MicroserviÃ§o de IA (ProduÃ§Ã£o)
+  model-service:
+    build:
+      context: ./Kicker_IQ-model-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    environment:
+      DATABASE_URL: postgresql://user:password@postgres-db:5432/kicker_iq_model
+      PORT: 3000
+    depends_on:
+      - postgres-db
+
+  # Gateway / Backend Principal
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3030:3030"
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/vesta
+      MODEL_SERVICE_URL: http://model-service:3000
+      JWT_SECRET: ${JWT_SECRET:-super-secret-key-123}
+      CLIENT_ID: ${CLIENT_ID:-dummy-id}
+    depends_on:
+      - mongodb
+      - model-service
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3030
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  mongodb_data:
