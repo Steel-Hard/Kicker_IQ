@@ -34,7 +34,7 @@ Nosso projeto usa de tecnologias correntes e técnicas avançadas no desenvolvim
 
 # SHELL COMMANDS 
 
- 1. CLONE DOS PROJETOS (ORQUESTRADOR  E MICROSEVICES)
+ 1. CLONE DOS PROJETOS (ORQUESTRADOR  E MICROSERVICES)
  ``` BASH
  git clone https://github.com/Steel-Hard/Kicker_IQ && cd Kicker_IQ && for repo in https://github.com/Steel-Hard/Kicker_IQ-model-kmeans https://github.com/Steel-Hard/Kicker_IQ-model-service; do git clone "$repo"; done
  ```

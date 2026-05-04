@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -15,7 +15,7 @@ services:
   mongodb:
     image: mongo:latest
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - mongodb_data:/data/db
 
@@ -42,8 +42,8 @@ services:
     environment:
       MONGODB_URI: mongodb://mongodb:27017/vesta
       MODEL_SERVICE_URL: http://model-service:3000
-      JWT_SECRET: ${JWT_SECRET:-secret_fallback}
-      CLIENT_ID: ${CLIENT_ID}
+      JWT_SECRET: ${JWT_SECRET:-super-secret-key-123}
+      CLIENT_ID: ${CLIENT_ID:-dummy-id}
     depends_on:
       - mongodb
       - model-service
@@ -56,7 +56,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:3030 # O frontend roda no browser, entÃ£o usa localhost
+      NEXT_PUBLIC_API_URL: http://localhost:3030
     depends_on:
       - backend
 
