@@ -127,12 +127,3 @@ Para seguir boas práticas de commits no seu projeto, consulte o repositório:
 | Nícolas Aquino    | Dev Team (Back-end) | [GitHub](https://github.com/Nickaqui)         |
 | Cláudio dos Santos Siqueira Júnior | Dev Team (Back-end) | [GitHub](https://github.com/claudsaints)        |
 | Luiz Felipe dos Santos             | Dev Team (Back-end) | [GitHub](https://github.com/felipe-sant)      |
-
-
-
-
-# KICKER
-
-<h2> Bem vindos!
-Steel-Hard entrega o Kicker_IQ, software para apoio à tomada de decisão em elencos de futebol!</h2>
-Nosso projeto usa de tecnologias correntes e técnicas avançadas no desenvolvimento de software.
