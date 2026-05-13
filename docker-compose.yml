@@ -25,10 +25,10 @@ services:
       context: ./Kicker_IQ-model-service
       dockerfile: Dockerfile
     ports:
-      - "3001:3000"
+      - "3001:3001"
     environment:
-      DATABASE_URL: postgresql://user:password@postgres-db:5432/kicker_iq_model
-      PORT: 3000
+      POSTGRESQL_URL: postgresql://user:password@postgres-db:5432/kicker_iq_model
+      PORT: 3001
     depends_on:
       - postgres-db
 
@@ -59,6 +59,10 @@ services:
       NEXT_PUBLIC_API_URL: http://localhost:3030
     depends_on:
       - backend
+    volumes:
+      - ./frontend:/app           
+      - /app/node_modules
+    command: npm run dev
 
 volumes:
   postgres_data:

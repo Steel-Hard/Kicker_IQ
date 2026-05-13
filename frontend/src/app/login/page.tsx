@@ -10,7 +10,7 @@ export default function LoginPage() {
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-black">
             K
           </div>
-          <span className="text-xl font-bold tracking-tight">Kicker IQ</span>
+          <span className="text-xl font-bold tracking-tight">Kicker </span>
         </Link>
         <ThemeToggle />
       </header>

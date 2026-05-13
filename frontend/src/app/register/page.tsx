@@ -10,7 +10,7 @@ export default function RegisterPage() {
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-black text-xs">
             K
           </div>
-          <span className="text-lg font-bold tracking-tighter uppercase italic">Kicker IQ</span>
+          <span className="text-lg font-bold tracking-tighter uppercase italic">Kicker</span>
         </Link>
         <ThemeToggle />
       </header>
