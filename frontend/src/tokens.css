@@ -1,0 +1,433 @@
+/* =============================================================
+   Kicker Design System — Design Tokens
+   Análise de desempenho esportivo (futebol). Dark-only.
+   Source: figma "ABP" — Page 1 (mobile) + Page 2 (login/import/etc)
+   ============================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=42dot+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* ── Surfaces (dark-only, near-black ramp) ─────────────────── */
+  --surface-0:        #000000;   /* page background, phone bezel */
+  --surface-1:        #0A0A0A;   /* primary surface (app body) */
+  --surface-2:        #0D0D0D;   /* card surface */
+  --surface-3:        #111111;   /* raised card / search / topbar control */
+  --surface-4:        #1A1A1A;   /* input / secondary button bg */
+  --surface-5:        #222222;   /* hovered surface */
+
+  /* ── Border / hairline ─────────────────────────────────────── */
+  --border-subtle:    #1A1A1A;   /* bottom-nav, list dividers */
+  --border-default:   #1F1F1F;   /* card outlines */
+  --border-strong:    #222222;   /* inputs, search-box outline */
+  --border-emphasis:  #333333;   /* topbar elements (page-2 style) */
+  --border-muted:     #444444;   /* form fields (page-2 style) */
+
+  /* ── Text ──────────────────────────────────────────────────── */
+  --text-primary:     #FFFFFF;   /* titles, primary names */
+  --text-high:        #F0F0F0;   /* page-2 text emphasis */
+  --text-secondary:   #CCCCCC;   /* table values, body */
+  --text-muted:       #888888;   /* labels (page-2) */
+  --text-subtle:      #777777;   /* captions, meta, placeholders */
+  --text-on-primary:  #000000;   /* text over yellow CTA */
+  --text-on-primary-2:#0A0A0A;   /* text over yellow (page-2) */
+
+  /* ── Brand / Primary (Kicker yellow) ───────────────────────── */
+  --primary:          #DAA520;   /* goldenrod — primary action bg */
+  --primary-hover:    #C4901A;
+  --primary-strong:   #FFD700;   /* pure gold — page-2 logo, links, accents */
+  --primary-strong-hover:#E6C200;
+
+  /* ── Status (semantic) ─────────────────────────────────────── */
+  --danger:           #E24B4A;   /* alert dot, derrota indicator */
+  --danger-bg:        #FCEBEB;   /* alert banner bg (light surface on dark) */
+  --danger-border:    #F09595;
+  --danger-text:      #791F1F;   /* danger title text on light bg */
+  --danger-text-2:    #A32D2D;   /* danger body text on light bg */
+
+  --success:          #1D9E75;   /* "média" legend, vitória */
+  --success-soft:     #5DCAA5;   /* secondary green for charts */
+  --success-bg:       #E1F5EE;   /* vitória pill bg */
+  --success-text:     #085041;   /* vitória text */
+
+  --warning:          #EF9F27;   /* sprint trend line, "alta resist." */
+  --warning-bg:       #FAEEDA;   /* bg for explosivo-like pills */
+  --warning-text:     #633806;   /* text on warning-bg */
+
+  --terracotta:       #712B13;   /* "alto impacto" text */
+  --terracotta-bg:    #FAECE7;   /* "alto impacto" pill bg */
+
+  --neutral-pill-bg:  #FFFFFF;   /* "Todos" filter chip selected */
+  --neutral-pill-text:#000000;
+
+  /* ── Avatar palettes (per profile) ─────────────────────────── */
+  --avatar-explosivo-bg:    #FAEEDA;
+  --avatar-explosivo-text:  #633806;
+  --avatar-impacto-bg:      #FAECE7;
+  --avatar-impacto-text:    #712B13;
+  --avatar-resist-bg:       #E1F5EE;
+  --avatar-resist-text:     #085041;
+  --avatar-baixa-bg:        #F0F0F0;
+  --avatar-baixa-text:      #444444;
+
+  /* ── Charts (data viz) ─────────────────────────────────────── */
+  --chart-trend:      #EF9F27;   /* main line — sprint distance */
+  --chart-alert:      #E24B4A;   /* alert points / bars */
+  --chart-baseline:   #1D9E75;   /* média / normal bars */
+  --chart-baseline-soft:#5DCAA5; /* secondary green */
+  --chart-grid:       #1F1F1F;
+  --chart-axis:       #777777;
+
+  /* ── Typography ─────────────────────────────────────────────
+     The figma uses "42dot Sans" exclusively (Medium 500 + Regular 400).
+     A geometric sans with subtle mechanical character.
+     ──────────────────────────────────────────────────────────── */
+  --font-sans:        '42dot Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:        ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Type scale — exact sizes observed in mobile screens (iOS native scale) */
+  --fs-9:             9px;
+  --fs-10:            10px;   /* legend, pill text, nav labels */
+  --fs-11:            11px;   /* section labels (uppercase letterspacing), meta */
+  --fs-12:            12px;   /* secondary body, button labels, kpi label */
+  --fs-13:            13px;   /* time, list-item name, body */
+  --fs-14:            14px;   /* form value, primary CTA label (page-2) */
+  --fs-15:            15px;   /* topbar title */
+  --fs-16:            16px;   /* topbar title (page-2) */
+  --fs-17:            17px;   /* hero name */
+  --fs-18:            18px;   /* avatar initials lg, logo */
+  --fs-20:            20px;   /* kpi value */
+  --fs-24:            24px;   /* kpi value lg */
+  --fs-28:            28px;   /* kpi value xl */
+
+  --fw-regular:       400;
+  --fw-medium:        500;    /* PRIMARY weight — almost everything emphasized uses 500 */
+  --fw-semibold:      600;
+  --fw-bold:          700;
+
+  --lh-tight:         1.2;
+  --lh-snug:          1.3;
+  --lh-normal:        1.4;
+  --lh-relaxed:       1.55;
+
+  --tracking-tight:   -0.015em;
+  --tracking-section: 0.4px;     /* uppercase-feeling section labels */
+
+  /* ── Radii (mobile-first; 5 tiers) ─────────────────────────── */
+  --radius-xs:        2px;       /* legend square */
+  --radius-sm:        8px;       /* form fields (page-2) */
+  --radius-md:        10px;      /* buttons, cards, search-box */
+  --radius-lg:        12px;      /* form fields (page-2 input) */
+  --radius-xl:        14px;      /* logo tile */
+  --radius-2xl:       16px;      /* large slot card */
+  --radius-pill:      20px;      /* profile pills, filter chips */
+  --radius-circle:    9999px;    /* avatars, alert dots, badge */
+  --radius-phone:     36px;      /* device bezel */
+  --radius-notch:     16px;      /* dynamic-island bottom corners */
+
+  /* ── Spacing scale (4-pt base) ─────────────────────────────── */
+  --space-1:          4px;
+  --space-2:          8px;
+  --space-3:          12px;
+  --space-4:          14px;      /* mobile horizontal padding */
+  --space-5:          16px;
+  --space-6:          20px;
+  --space-7:          22px;
+  --space-8:          24px;
+  --space-9:          28px;
+  --space-10:         32px;
+  --space-12:         44px;      /* primary button height */
+  --space-14:         56px;      /* avatar lg */
+
+  /* ── Sizes (semantic) ──────────────────────────────────────── */
+  --size-avatar-sm:   28px;
+  --size-avatar-md:   40px;
+  --size-avatar-lg:   56px;
+  --size-tap-target:  44px;      /* min hit area, primary button */
+  --size-input-md:    38px;      /* page-2 fields */
+  --size-input-lg:    42px;      /* page-2 login fields */
+  --size-icon-btn:    30px;      /* topbar action button */
+  --size-back-btn:    28px;      /* circular back button */
+  --size-chip:        28px;      /* filter chip height */
+  --size-pill-sm:     16.8px;    /* profile pill height */
+  --size-bottomnav:   64px;
+  --size-topbar:      48px;
+
+  --layout-mobile-w:  420px;     /* design canvas width */
+  --layout-mobile-w-compact: 320px; /* page-2 frames */
+
+  /* ── Elevation / shadows (subtle on dark) ──────────────────── */
+  --shadow-1:         0 1px 2px 0 rgba(0,0,0,0.4);
+  --shadow-2:         0 2px 8px 0 rgba(0,0,0,0.5);
+  --shadow-3:         0 8px 24px 0 rgba(0,0,0,0.6);
+  --shadow-glow-primary: 0 0 24px rgba(218,165,32,0.20);
+  --shadow-glow-danger:  0 0 16px rgba(226,75,74,0.25);
+
+  /* ── Motion ────────────────────────────────────────────────── */
+  --ease-out:         cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:      cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-1:       120ms;
+  --duration-2:       200ms;
+  --duration-3:       320ms;
+
+  /* ── Z-index scale ─────────────────────────────────────────── */
+  --z-base:           0;
+  --z-sticky:         10;
+  --z-overlay:        50;
+  --z-modal:          100;
+  --z-toast:          200;
+}
+
+/* =============================================================
+   Base reset — apply tokens to common elements
+   ============================================================= */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background-color: var(--surface-0);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--fs-14);
+  line-height: var(--lh-normal);
+  font-feature-settings: 'ss01', 'cv01';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-primary);
+}
+
+h1 { font-size: var(--fs-28); }
+h2 { font-size: var(--fs-24); }
+h3 { font-size: var(--fs-20); }
+h4 { font-size: var(--fs-17); }
+h5 { font-size: var(--fs-15); }
+h6 { font-size: var(--fs-13); }
+
+p  { margin: 0; color: var(--text-secondary); line-height: var(--lh-relaxed); }
+
+small, .caption {
+  font-size: var(--fs-11);
+  color: var(--text-subtle);
+}
+
+a {
+  color: var(--primary-strong);
+  text-decoration: none;
+  transition: color var(--duration-1) var(--ease-out);
+}
+a:hover { color: var(--primary-strong-hover); }
+
+::selection {
+  background-color: rgba(218,165,32,0.35);
+  color: #fff;
+}
+
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-thumb { background-color: var(--border-strong); border-radius: 4px; }
+::-webkit-scrollbar-track { background-color: var(--surface-0); }
+
+/* =============================================================
+   Utility classes — common patterns from the Kicker mocks
+   ============================================================= */
+
+/* Section label — small uppercase-tone label that introduces grids */
+.k-section-label {
+  font-size: var(--fs-11);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-section);
+  color: var(--text-subtle);
+}
+
+/* Card surface — neutral list/kpi card */
+.k-card {
+  background-color: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+/* Filled primary CTA (the gold action button) */
+.k-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: var(--space-12);
+  padding: 0 var(--space-5);
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: var(--primary);
+  color: var(--text-on-primary);
+  font-family: var(--font-sans);
+  font-size: var(--fs-12);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: background-color var(--duration-1) var(--ease-out);
+}
+.k-btn-primary:hover  { background-color: var(--primary-hover); }
+.k-btn-primary:active { transform: translateY(0.5px); }
+.k-btn-primary:disabled {
+  opacity: 0.45;
+  background-color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* Secondary outline button (Comparar atletas / Cancelar) */
+.k-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: var(--space-12);
+  padding: 0 var(--space-5);
+  border: 1px solid var(--border-emphasis);
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--fs-12);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: border-color var(--duration-1) var(--ease-out),
+              background-color var(--duration-1) var(--ease-out);
+}
+.k-btn-outline:hover { border-color: var(--border-muted); background-color: var(--surface-3); }
+
+/* Profile pill — categorizes athletes by physical profile */
+.k-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: var(--size-pill-sm);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-10);
+  font-weight: var(--fw-medium);
+  line-height: 1;
+  white-space: nowrap;
+}
+.k-pill--explosivo { background: var(--warning-bg);    color: var(--warning-text); }
+.k-pill--impacto   { background: var(--terracotta-bg); color: var(--terracotta); }
+.k-pill--resist    { background: var(--success-bg);    color: var(--success-text); }
+.k-pill--baixa     { background: var(--avatar-baixa-bg); color: var(--avatar-baixa-text); }
+.k-pill--alert     { background: var(--danger-bg);     color: var(--danger-text); }
+.k-pill--neutral   { background: var(--neutral-pill-bg); color: var(--neutral-pill-text); }
+
+/* Filter chip — used in horizontal filter rows (with leading dot) */
+.k-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--size-chip);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-3);
+  color: var(--text-secondary);
+  font-size: var(--fs-12);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--duration-1) var(--ease-out);
+}
+.k-chip[aria-selected="true"],
+.k-chip--selected { background: #fff; color: #000; border-color: #fff; }
+.k-chip__dot {
+  width: 6px; height: 6px; border-radius: 50%; background: currentColor;
+}
+
+/* Status dot — colored 7px circle marker */
+.k-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.k-dot--alert    { background: var(--danger); }
+.k-dot--warning  { background: var(--warning); }
+.k-dot--success  { background: var(--chart-baseline); }
+.k-dot--muted    { background: var(--text-subtle); }
+
+/* Avatar — initials in colored circle */
+.k-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-12);
+  flex-shrink: 0;
+}
+.k-avatar--md { width: var(--size-avatar-md); height: var(--size-avatar-md); }
+.k-avatar--lg { width: var(--size-avatar-lg); height: var(--size-avatar-lg); font-size: var(--fs-18); }
+.k-avatar--explosivo { background: var(--avatar-explosivo-bg); color: var(--avatar-explosivo-text); }
+.k-avatar--impacto   { background: var(--avatar-impacto-bg);   color: var(--avatar-impacto-text); }
+.k-avatar--resist    { background: var(--avatar-resist-bg);    color: var(--avatar-resist-text); }
+.k-avatar--baixa     { background: var(--avatar-baixa-bg);     color: var(--avatar-baixa-text); }
+.k-avatar--neutral   { background: var(--surface-3); color: var(--text-secondary); border: 1px solid var(--border-strong); }
+
+/* KPI card — small data cell with label + value + delta */
+.k-kpi {
+  background-color: var(--surface-3);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex; flex-direction: column; gap: var(--space-1);
+}
+.k-kpi__label { font-size: var(--fs-11); color: var(--text-subtle); }
+.k-kpi__value { font-size: var(--fs-20); font-weight: var(--fw-medium); color: var(--text-primary); line-height: 1.1; }
+.k-kpi__delta { font-size: var(--fs-11); color: var(--text-subtle); }
+.k-kpi__delta--up    { color: var(--chart-baseline); }
+.k-kpi__delta--down  { color: var(--danger); }
+
+/* Alert banner (light surface on dark page — high-contrast warning) */
+.k-alert-banner {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  color: var(--danger-text);
+}
+.k-alert-banner__title { font-size: var(--fs-12); font-weight: var(--fw-medium); color: var(--danger-text); }
+.k-alert-banner__desc  { font-size: var(--fs-11); color: var(--danger-text-2); line-height: 1.4; }
+
+/* Form input field (page-2 style) */
+.k-field {
+  width: 100%;
+  height: var(--size-input-lg);
+  padding: 0 var(--space-3);
+  background-color: var(--surface-4);
+  border: 1px solid var(--border-emphasis);
+  border-radius: var(--radius-lg);
+  color: var(--text-high);
+  font-family: var(--font-sans);
+  font-size: var(--fs-14);
+  outline: none;
+  transition: border-color var(--duration-1) var(--ease-out);
+}
+.k-field::placeholder { color: var(--text-muted); }
+.k-field:focus { border-color: var(--primary-strong); }
+
+/* Search box (mobile body style) */
+.k-search {
+  display: flex; align-items: center; gap: var(--space-2);
+  height: 36px;
+  padding: 0 var(--space-3);
+  background-color: var(--surface-3);
+  border: 1px solid var(--border-emphasis);
+  border-radius: var(--radius-md);
+  color: var(--text-subtle);
+  font-size: var(--fs-13);
+}
+
+/* Phone bezel — for embedding mocks in marketing/showcase contexts */
+.k-phone {
+  width: var(--layout-mobile-w);
+  background-color: var(--surface-0);
+  border: 1px solid var(--border-emphasis);
+  border-radius: var(--radius-phone);
+  overflow: hidden;
+  position: relative;
+}
