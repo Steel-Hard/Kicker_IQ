@@ -72,7 +72,6 @@ export default function DashboardPage() {
 
         {/* Last match result */}
         <div
-          className="animate-slide-down"
           style={{
             background: 'var(--surface-2)',
             border: '1px solid var(--border-default)',
@@ -117,7 +116,7 @@ export default function DashboardPage() {
 
         {/* Alerts */}
         {alertAthletes.length > 0 && (
-          <div className="animate-slide-up delay-1" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div className="k-section-label">ALERTAS ATIVOS</div>
             {alertAthletes.map((a) => (
               <AlertBanner
@@ -131,7 +130,7 @@ export default function DashboardPage() {
         )}
 
         {/* KPI grid */}
-        <div className="animate-slide-up delay-2">
+        <div>
           <div className="k-section-label" style={{ marginBottom: 10 }}>
             ÚLTIMOS 7 DIAS — ELENCO
           </div>
@@ -164,7 +163,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Sprint evolution chart */}
-        <div className="animate-slide-up delay-3">
+        <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <div className="k-section-label">EVOLUÇÃO — DIST. DE SPRINT (m)</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -194,7 +193,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick actions */}
-        <div className="animate-slide-up delay-4">
+        <div>
           <div className="k-section-label" style={{ marginBottom: 10 }}>AÇÕES RÁPIDAS</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <Link
@@ -244,7 +243,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Top performers */}
-        <div className="animate-slide-up delay-5">
+        <div>
           <div className="k-section-label" style={{ marginBottom: 10 }}>TOP PERFORMERS — J22</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             {athletes
@@ -269,9 +268,7 @@ export default function DashboardPage() {
                   <span style={{ fontSize: 11, color: 'var(--text-subtle)', width: 16, textAlign: 'right' }}>
                     {i + 1}
                   </span>
-                  <span
-                    className={`k-avatar k-avatar--sm k-avatar--${athlete.profile}`}
-                  >
+                  <span className={`k-avatar k-avatar--sm k-avatar--${athlete.profile}`}>
                     {athlete.initials}
                   </span>
                   <div style={{ flex: 1 }}>

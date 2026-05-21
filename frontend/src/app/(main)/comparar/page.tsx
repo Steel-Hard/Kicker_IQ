@@ -18,8 +18,6 @@ const metrics: { key: MetricKey; label: string; unit: string; higherIsBetter: bo
   { key: 'pse',           label: 'PSE',           unit: '',     higherIsBetter: false },
 ]
 
-const radarLabels = ['Vel.', 'Explos.', 'Carga', 'Técnica', 'Recup.', 'Resist.']
-
 function AthleteSlot({
   athlete,
   onSelect,
@@ -213,7 +211,7 @@ export default function CompararPage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 14px', paddingBottom: 24 }}>
 
         {/* Athlete slots */}
-        <div className="animate-slide-up" style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8 }}>
           <AthleteSlot
             athlete={athlete1}
             onSelect={() => setPicker(1)}
@@ -244,7 +242,6 @@ export default function CompararPage() {
         {/* Tabs */}
         {(athlete1 || athlete2) && (
           <div
-            className="animate-fade-in delay-1"
             style={{
               display: 'flex',
               gap: 0,
@@ -279,7 +276,7 @@ export default function CompararPage() {
 
         {/* Radar chart */}
         {tab === 'Físico' && athlete1 && (
-          <div className="animate-slide-up delay-2">
+          <div>
             <div className="k-section-label" style={{ marginBottom: 10 }}>RADAR — PERFIL FÍSICO</div>
             <div
               style={{
@@ -304,7 +301,7 @@ export default function CompararPage() {
 
         {/* Stats comparison */}
         {tab === 'Desempenho' && (athlete1 || athlete2) && (
-          <div className="animate-slide-up delay-2">
+          <div>
             <div className="k-section-label" style={{ marginBottom: 10 }}>COMPARATIVO — J22</div>
             <div
               style={{
@@ -329,7 +326,6 @@ export default function CompararPage() {
                       borderBottom: i < metrics.length - 1 ? '1px solid var(--border-subtle)' : 'none',
                     }}
                   >
-                    {/* Value 1 */}
                     <div
                       style={{
                         flex: 1,
@@ -342,25 +338,17 @@ export default function CompararPage() {
                       {v1 !== null
                         ? m.key === 'weeklyLoad'
                           ? v1.toLocaleString('pt-BR')
-                          : formatNumber(v1, m.key === 'pse' ? 1 : 1)
+                          : formatNumber(v1, 1)
                         : '—'}
                       {v1 !== null && m.unit && (
                         <span style={{ fontSize: 9, color: 'var(--text-subtle)', marginLeft: 2 }}>{m.unit}</span>
                       )}
                     </div>
 
-                    {/* Label */}
-                    <div
-                      style={{
-                        textAlign: 'center',
-                        flexShrink: 0,
-                        width: 90,
-                      }}
-                    >
+                    <div style={{ textAlign: 'center', flexShrink: 0, width: 90 }}>
                       <div style={{ fontSize: 10, color: 'var(--text-subtle)', fontWeight: 500 }}>{m.label}</div>
                     </div>
 
-                    {/* Value 2 */}
                     <div
                       style={{
                         flex: 1,
@@ -373,7 +361,7 @@ export default function CompararPage() {
                       {v2 !== null
                         ? m.key === 'weeklyLoad'
                           ? v2.toLocaleString('pt-BR')
-                          : formatNumber(v2, m.key === 'pse' ? 1 : 1)
+                          : formatNumber(v2, 1)
                         : '—'}
                       {v2 !== null && m.unit && (
                         <span style={{ fontSize: 9, color: 'var(--text-subtle)', marginLeft: 2 }}>{m.unit}</span>
@@ -388,7 +376,7 @@ export default function CompararPage() {
 
         {/* Deltas */}
         {tab === 'Desempenho' && athlete1 && athlete2 && (
-          <div className="animate-slide-up delay-3">
+          <div>
             <div className="k-section-label" style={{ marginBottom: 10 }}>TENDÊNCIA — VS JORNADA ANTERIOR</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               <div
@@ -448,7 +436,6 @@ export default function CompararPage() {
 
       </div>
 
-      {/* Picker modal */}
       {picker !== null && (
         <AthletePickerModal
           onSelect={handleSelect}

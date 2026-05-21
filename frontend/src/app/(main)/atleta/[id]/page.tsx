@@ -57,7 +57,6 @@ export default function AtletaPage({ params }: { params: { id: string } }) {
 
         {/* Hero */}
         <div
-          className="animate-slide-up"
           style={{
             background: 'var(--surface-2)',
             border: '1px solid var(--border-default)',
@@ -84,18 +83,15 @@ export default function AtletaPage({ params }: { params: { id: string } }) {
 
         {/* Alert */}
         {athlete.hasAlert && (
-          <div className="animate-slide-up delay-1">
-            <AlertBanner
-              title={athlete.alertTitle!}
-              description={athlete.alertDesc}
-              action="Detalhes ↗"
-            />
-          </div>
+          <AlertBanner
+            title={athlete.alertTitle!}
+            description={athlete.alertDesc}
+            action="Detalhes ↗"
+          />
         )}
 
         {/* Tabs */}
         <div
-          className="animate-fade-in delay-2"
           style={{
             display: 'flex',
             gap: 0,
@@ -130,7 +126,7 @@ export default function AtletaPage({ params }: { params: { id: string } }) {
         {/* Tab content: Desempenho */}
         {tab === 'Desempenho' && (
           <>
-            <div className="animate-slide-up">
+            <div>
               <div className="k-section-label" style={{ marginBottom: 10 }}>MÉTRICAS — J22</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                 <KpiCard
@@ -160,7 +156,7 @@ export default function AtletaPage({ params }: { params: { id: string } }) {
               </div>
             </div>
 
-            <div className="animate-slide-up delay-1">
+            <div>
               <div className="k-section-label" style={{ marginBottom: 10 }}>PERFIL FÍSICO</div>
               <div
                 style={{
@@ -181,7 +177,7 @@ export default function AtletaPage({ params }: { params: { id: string } }) {
 
         {/* Tab content: Histórico */}
         {tab === 'Histórico' && (
-          <div className="animate-slide-up">
+          <div>
             <div className="k-section-label" style={{ marginBottom: 10 }}>
               EVOLUÇÃO — DISTÂNCIA SPRINT (m)
             </div>
@@ -244,7 +240,7 @@ export default function AtletaPage({ params }: { params: { id: string } }) {
 
         {/* Tab content: Carga */}
         {tab === 'Carga' && (
-          <div className="animate-slide-up">
+          <div>
             <div className="k-section-label" style={{ marginBottom: 10 }}>CARGA ACUMULADA</div>
             <div
               style={{
@@ -293,7 +289,6 @@ export default function AtletaPage({ params }: { params: { id: string } }) {
                             width: `${pct}%`,
                             background: color,
                             borderRadius: 3,
-                            transition: 'width 600ms var(--ease-out)',
                           }}
                         />
                       </div>

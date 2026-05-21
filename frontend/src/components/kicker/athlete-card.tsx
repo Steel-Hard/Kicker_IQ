@@ -9,7 +9,7 @@ interface AthleteCardProps {
   showAlert?: boolean
 }
 
-export function AthleteCard({ athlete, showAlert }: AthleteCardProps) {
+export function AthleteCard({ athlete }: AthleteCardProps) {
   return (
     <Link
       href={`/atleta/${athlete.id}`}

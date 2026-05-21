@@ -107,14 +107,8 @@ export default function ElencoPage() {
               Nenhum atleta encontrado
             </div>
           ) : (
-            filtered.map((athlete, i) => (
-              <div
-                key={athlete.id}
-                className="animate-slide-up"
-                style={{ animationDelay: `${i * 40}ms` }}
-              >
-                <AthleteCard athlete={athlete} />
-              </div>
+            filtered.map((athlete) => (
+              <AthleteCard key={athlete.id} athlete={athlete} />
             ))
           )}
         </div>

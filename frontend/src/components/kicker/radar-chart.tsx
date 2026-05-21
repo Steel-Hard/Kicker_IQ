@@ -53,7 +53,6 @@ export function KickerRadarChart({ data1, data2, label1 = 'A', label2 = 'B' }: R
   return (
     <div>
       <svg viewBox="0 0 260 240" style={{ width: '100%', maxWidth: 280 }}>
-        {/* Grid rings */}
         {rings.map((pct) => {
           const r = (pct / 100) * R
           const points = Array.from({ length: N }, (_, i) => {
@@ -71,7 +70,6 @@ export function KickerRadarChart({ data1, data2, label1 = 'A', label2 = 'B' }: R
           )
         })}
 
-        {/* Axis lines */}
         {AXES.map((axis, i) => {
           const angle = (360 / N) * i
           const outer = polarToCartesian(CX, CY, R, angle)
@@ -86,7 +84,6 @@ export function KickerRadarChart({ data1, data2, label1 = 'A', label2 = 'B' }: R
           )
         })}
 
-        {/* Data polygon 1 */}
         <polygon
           points={buildPolygon(data1, R)}
           fill={data2 ? 'rgba(218,165,32,0.18)' : 'rgba(93,202,165,0.20)'}
@@ -94,7 +91,6 @@ export function KickerRadarChart({ data1, data2, label1 = 'A', label2 = 'B' }: R
           strokeWidth="1.5"
         />
 
-        {/* Data polygon 2 */}
         {data2 && (
           <polygon
             points={buildPolygon(data2, R)}
@@ -104,7 +100,6 @@ export function KickerRadarChart({ data1, data2, label1 = 'A', label2 = 'B' }: R
           />
         )}
 
-        {/* Axis labels */}
         {AXES.map((axis, i) => {
           const angle = (360 / N) * i
           const pt = polarToCartesian(CX, CY, R + 18, angle)
@@ -126,7 +121,6 @@ export function KickerRadarChart({ data1, data2, label1 = 'A', label2 = 'B' }: R
         })}
       </svg>
 
-      {/* Legend */}
       <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <span style={{

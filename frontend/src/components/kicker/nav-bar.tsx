@@ -2,12 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Users, Bell } from 'lucide-react'
+import { LayoutDashboard, Users, Upload, BarChart2, Settings } from 'lucide-react'
 
 const items = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/elenco',    icon: Users,           label: 'Elenco' },
-  { href: '/alertas',   icon: Bell,            label: 'Alertas' },
+  { href: '/importar',  icon: Upload,          label: 'Importar', primary: true },
+  { href: '/comparar',  icon: BarChart2,       label: 'Comparar' },
+  { href: '/config',    icon: Settings,        label: 'Config' },
 ] as const
 
 export function NavBar() {
@@ -15,8 +17,31 @@ export function NavBar() {
 
   return (
     <nav className="app-nav">
-      {items.map(({ href, icon: Icon, label }) => {
+      {items.map(({ href, icon: Icon, label, primary }) => {
         const active = pathname === href || pathname.startsWith(href + '/')
+
+        if (primary) {
+          return (
+            <Link key={href} href={href} className="app-nav-link">
+              <span
+                className="app-nav-primary-icon"
+                style={{
+                  background: active ? 'var(--primary)' : 'var(--surface-3)',
+                  border: active ? 'none' : '1px solid var(--border-emphasis)',
+                  transition: 'background 200ms',
+                }}
+              >
+                <Icon size={18} style={{ color: active ? '#000' : 'var(--text-secondary)' }} />
+              </span>
+              <span
+                className="app-nav-label"
+                style={{ color: active ? 'var(--primary-strong)' : 'var(--text-subtle)', transition: 'color 200ms' }}
+              >
+                {label}
+              </span>
+            </Link>
+          )
+        }
 
         return (
           <Link key={href} href={href} className="app-nav-link">
@@ -40,4 +65,3 @@ export function NavBar() {
     </nav>
   )
 }
-

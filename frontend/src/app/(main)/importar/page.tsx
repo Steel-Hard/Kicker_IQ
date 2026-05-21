@@ -14,27 +14,37 @@ function Stepper({ current }: { current: Step }) {
   ]
 
   return (
-    <div className="flex items-center gap-0 w-full max-w-md mx-auto">
+    <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
       {steps.map((s, i) => (
-        <div key={s.n} className={`flex items-center ${i < steps.length - 1 ? 'flex-1' : 'flex-none'}`}>
-          <div className="flex flex-col items-center gap-1">
+        <div key={s.n} style={{ display: 'flex', alignItems: 'center', flex: i < steps.length - 1 ? 1 : 'none' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
             <div
-              className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-medium transition-colors duration-200"
               style={{
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 10,
+                fontWeight: 500,
                 background: current > s.n
                   ? 'var(--chart-baseline)'
                   : current === s.n
                   ? 'var(--primary)'
                   : 'var(--surface-4)',
-                color: current >= s.n ? '#000' : 'var(--text-subtle)'
+                color: current >= s.n ? '#000' : 'var(--text-subtle)',
+                transition: 'background 200ms',
               }}
             >
               {current > s.n ? <Check size={11} /> : s.n}
             </div>
             <span
-              className="text-[9px] font-medium tracking-[0.3px]"
               style={{
-                color: current >= s.n ? 'var(--text-secondary)' : 'var(--text-subtle)'
+                fontSize: 9,
+                fontWeight: 500,
+                color: current >= s.n ? 'var(--text-secondary)' : 'var(--text-subtle)',
+                letterSpacing: 0.3,
               }}
             >
               {s.label.toUpperCase()}
@@ -42,9 +52,13 @@ function Stepper({ current }: { current: Step }) {
           </div>
           {i < steps.length - 1 && (
             <div
-              className="flex-1 h-px mx-1.5 mb-4 transition-colors duration-200"
               style={{
-                background: current > s.n ? 'var(--chart-baseline)' : 'var(--border-emphasis)'
+                flex: 1,
+                height: 1,
+                background: current > s.n ? 'var(--chart-baseline)' : 'var(--border-emphasis)',
+                margin: '0 6px',
+                marginBottom: 16,
+                transition: 'background 200ms',
               }}
             />
           )}
@@ -64,23 +78,22 @@ export default function ImportarPage() {
   const [matchDate, setMatchDate] = useState('')
 
   return (
-    <div className="flex flex-col min-h-screen bg-surface-1">
+    <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--surface-1)' }}>
       <TopBar title="Importar partida" />
 
-      <div className="flex flex-col gap-6 p-5 pb-8 md:p-10 w-full max-w-2xl mx-auto">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px 14px', paddingBottom: 32 }}>
+
         {/* Stepper */}
-        <div className="animate-slide-down">
-          <Stepper current={step} />
-        </div>
+        <Stepper current={step} />
 
         {/* Step 1: Match info */}
         {step === 1 && (
-          <div className="animate-slide-up flex flex-col gap-4 bg-surface-2 p-5 rounded-xl border border-border-default md:p-8 shadow-sm">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div className="k-section-label">INFORMAÇÕES DA PARTIDA</div>
 
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1">
-                <label className="text-[11px] text-text-subtle font-medium">DATA</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <label style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 500 }}>DATA</label>
                 <input
                   className="k-field"
                   type="date"
@@ -90,17 +103,13 @@ export default function ImportarPage() {
                 />
               </div>
 
-              <div className="flex flex-col gap-1">
-                <label className="text-[11px] text-text-subtle font-medium">COMPETIÇÃO</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <label style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 500 }}>COMPETIÇÃO</label>
                 <select
                   className="k-field"
                   value={competition}
                   onChange={(e) => setCompetition(e.target.value)}
-                  style={{
-                    appearance: 'none',
-                    cursor: 'pointer',
-                    colorScheme: 'dark',
-                  }}
+                  style={{ appearance: 'none', cursor: 'pointer', colorScheme: 'dark' }}
                 >
                   <option value="" disabled>Selecionar…</option>
                   <option>Campeonato Brasileiro — Série A</option>
@@ -111,9 +120,9 @@ export default function ImportarPage() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1">
-                  <label className="text-[11px] text-text-subtle font-medium">MANDANTE</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <label style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 500 }}>MANDANTE</label>
                   <input
                     className="k-field"
                     value={homeTeam}
@@ -121,8 +130,8 @@ export default function ImportarPage() {
                     placeholder="Equipe da casa"
                   />
                 </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-[11px] text-text-subtle font-medium">VISITANTE</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <label style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 500 }}>VISITANTE</label>
                   <input
                     className="k-field"
                     value={awayTeam}
@@ -134,7 +143,8 @@ export default function ImportarPage() {
             </div>
 
             <button
-              className="k-btn-primary w-full mt-4 md:w-auto md:self-end md:px-8"
+              className="k-btn-primary"
+              style={{ width: '100%', marginTop: 8 }}
               disabled={!competition || !matchDate || !awayTeam}
               onClick={() => setStep(2)}
             >
@@ -145,10 +155,9 @@ export default function ImportarPage() {
 
         {/* Step 2: Upload */}
         {step === 2 && (
-          <div className="animate-slide-up flex flex-col gap-4 bg-surface-2 p-5 rounded-xl border border-border-default md:p-8 shadow-sm">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div className="k-section-label">ARQUIVO DE DADOS GPS</div>
 
-            {/* Drop zone */}
             <div
               onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
               onDragLeave={() => setDragging(false)}
@@ -159,38 +168,65 @@ export default function ImportarPage() {
                 if (f) setFile(f.name)
               }}
               onClick={() => setFile('dados_j23_gps_export.csv')}
-              className="rounded-xl p-8 flex flex-col items-center gap-3 cursor-pointer transition-all duration-150 border-[1.5px] border-dashed"
               style={{
-                borderColor: dragging ? 'var(--primary)' : file ? 'var(--chart-baseline)' : 'var(--border-muted)',
+                border: `1.5px dashed ${dragging ? 'var(--primary)' : file ? 'var(--chart-baseline)' : 'var(--border-muted)'}`,
+                borderRadius: 12,
+                padding: '32px 20px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 10,
+                cursor: 'pointer',
                 background: dragging
                   ? 'rgba(218,165,32,0.05)'
                   : file
                   ? 'rgba(29,158,117,0.05)'
-                  : 'var(--surface-3)',
+                  : 'var(--surface-2)',
+                transition: 'all 150ms',
               }}
             >
               {file ? (
                 <>
-                  <div className="w-11 h-11 rounded-full bg-success-bg flex items-center justify-center">
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: '50%',
+                      background: 'var(--success-bg)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
                     <FileText size={20} color="var(--success-text)" />
                   </div>
-                  <div className="text-center">
-                    <div className="text-xs font-medium text-text-primary">{file}</div>
-                    <div className="text-[10px] text-text-subtle mt-1">
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)' }}>{file}</div>
+                    <div style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 3 }}>
                       Arquivo carregado com sucesso
                     </div>
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="w-11 h-11 rounded-full border border-dashed border-border-muted flex items-center justify-center">
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: '50%',
+                      border: '1px dashed var(--border-muted)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
                     <CloudUpload size={20} color="var(--text-subtle)" />
                   </div>
-                  <div className="text-center">
-                    <div className="text-xs font-medium text-text-secondary">
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>
                       Arraste o arquivo ou clique para selecionar
                     </div>
-                    <div className="text-[10px] text-text-subtle mt-1">
+                    <div style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 3 }}>
                       .csv · .xlsx · .gpx — máx. 50 MB
                     </div>
                   </div>
@@ -198,22 +234,33 @@ export default function ImportarPage() {
               )}
             </div>
 
-            <div className="k-section-label mt-1">FORMATO ACEITO</div>
-            <div className="bg-surface-3 border border-border-default rounded-lg p-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="k-section-label" style={{ marginTop: 4 }}>FORMATO ACEITO</div>
+            <div
+              style={{
+                background: 'var(--surface-2)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 10,
+                padding: '12px 14px',
+              }}
+            >
               {['Catapult Sports (.csv)', 'Statsports Viper (.xlsx)', 'GPX padrão (.gpx)', 'Polar Team Pro (.csv)'].map((fmt) => (
-                <div key={fmt} className="flex items-center gap-2 py-1">
+                <div
+                  key={fmt}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}
+                >
                   <span className="k-dot k-dot--muted" />
-                  <span className="text-[11px] text-text-secondary">{fmt}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{fmt}</span>
                 </div>
               ))}
             </div>
 
-            <div className="flex gap-2 mt-4 md:justify-end">
-              <button className="k-btn-outline flex-1 md:flex-none md:w-32" onClick={() => setStep(1)}>
+            <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+              <button className="k-btn-outline" style={{ flex: 1 }} onClick={() => setStep(1)}>
                 Voltar
               </button>
               <button
-                className="k-btn-primary flex-1 md:flex-none md:w-32"
+                className="k-btn-primary"
+                style={{ flex: 1 }}
                 disabled={!file}
                 onClick={() => setStep(3)}
               >
@@ -225,10 +272,17 @@ export default function ImportarPage() {
 
         {/* Step 3: Confirm */}
         {step === 3 && (
-          <div className="animate-slide-up flex flex-col gap-4 bg-surface-2 p-5 rounded-xl border border-border-default md:p-8 shadow-sm">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div className="k-section-label">RESUMO DA IMPORTAÇÃO</div>
 
-            <div className="bg-surface-3 border border-border-default rounded-lg overflow-hidden">
+            <div
+              style={{
+                background: 'var(--surface-2)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 10,
+                overflow: 'hidden',
+              }}
+            >
               {[
                 { label: 'Partida', val: `${homeTeam} vs ${awayTeam || 'Adversário'}` },
                 { label: 'Competição', val: competition || 'Não informada' },
@@ -239,33 +293,47 @@ export default function ImportarPage() {
               ].map(({ label, val }, i, arr) => (
                 <div
                   key={label}
-                  className={`flex justify-between items-center px-4 py-3 ${i < arr.length - 1 ? 'border-b border-border-subtle' : ''}`}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '11px 14px',
+                    borderBottom: i < arr.length - 1 ? '1px solid var(--border-subtle)' : 'none',
+                  }}
                 >
-                  <span className="text-[11px] text-text-subtle font-medium">{label}</span>
-                  <span className="text-xs text-text-primary max-w-[55%] text-right">{val}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 500 }}>{label}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-primary)', maxWidth: '55%', textAlign: 'right' }}>{val}</span>
                 </div>
               ))}
             </div>
 
-            <div className="bg-[rgba(29,158,117,0.07)] border border-[rgba(29,158,117,0.25)] rounded-lg p-3">
-              <div className="flex items-center gap-1.5">
+            <div
+              style={{
+                background: 'rgba(29,158,117,0.07)',
+                border: '1px solid rgba(29,158,117,0.25)',
+                borderRadius: 10,
+                padding: '12px 14px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Check size={13} color="var(--chart-baseline)" />
-                <span className="text-[11px] font-medium text-success">
+                <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--success)' }}>
                   Validação concluída sem erros
                 </span>
               </div>
-              <p className="text-[10px] text-text-subtle mt-1.5 leading-[1.5]">
+              <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 4, lineHeight: 1.5 }}>
                 Todos os campos obrigatórios foram preenchidos. O arquivo GPS será processado e
                 os dados serão vinculados automaticamente aos atletas do elenco.
               </p>
             </div>
 
-            <div className="flex gap-2 mt-2 md:justify-end">
-              <button className="k-btn-outline flex-1 md:flex-none md:w-32" onClick={() => setStep(2)}>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button className="k-btn-outline" style={{ flex: 1 }} onClick={() => setStep(2)}>
                 Voltar
               </button>
               <button
-                className="k-btn-primary flex-1 md:flex-none md:w-32"
+                className="k-btn-primary"
+                style={{ flex: 1 }}
                 onClick={() => {
                   setStep(1)
                   setFile(null)
@@ -283,4 +351,3 @@ export default function ImportarPage() {
     </div>
   )
 }
-

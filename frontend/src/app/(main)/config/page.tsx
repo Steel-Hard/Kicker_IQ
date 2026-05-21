@@ -30,7 +30,6 @@ export default function ConfigPage() {
 
         {/* Profile card */}
         <div
-          className="animate-slide-up"
           style={{
             background: 'var(--surface-2)',
             border: '1px solid var(--border-default)',
@@ -55,7 +54,7 @@ export default function ConfigPage() {
 
         {/* Menu groups */}
         {menuItems.map((group) => (
-          <div key={group.group} className="animate-slide-up delay-1">
+          <div key={group.group}>
             <div className="k-section-label" style={{ marginBottom: 10 }}>{group.group}</div>
             <div
               style={{
@@ -108,10 +107,7 @@ export default function ConfigPage() {
         ))}
 
         {/* Version */}
-        <div
-          className="animate-fade-in delay-3"
-          style={{ textAlign: 'center' }}
-        >
+        <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 10, color: 'var(--text-subtle)' }}>
             Kicker v1.0.0 · São Paulo FC
           </div>
@@ -122,7 +118,7 @@ export default function ConfigPage() {
 
         {/* Logout */}
         <button
-          className="animate-fade-in delay-4 k-btn-outline"
+          className="k-btn-outline"
           style={{ width: '100%', color: 'var(--danger)', borderColor: 'rgba(226,75,74,0.3)' }}
         >
           <LogOut size={14} />
