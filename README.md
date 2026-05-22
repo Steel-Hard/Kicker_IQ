@@ -57,6 +57,14 @@
 
 ---
 
+## 🔄 Scrum
+| Sprint                                    | Início     | Fim        | Status           | 📉 Burndown Chart                                        |
+|:-----------------------------------------:|:----------:|:----------:|:----------------:|:---------------------------------------------------------:|
+| 1 | 13/04/2026 | 30/04/2026 | 🟢 Concluído    | [Ver Gráfico](assets/burndown_1.png) |
+| 2 | 04/05/2026 | 21/05/2026 | 🟠 Em andamento  | [Ver Gráfico](assets/burndown_2.png) |
+| 3 | 25/05/2026 | 11/06/2026 | 🔴 A Fazer | [Ver Gráfico](assets/burndown_sp3.png) |
+
+---
 
 ## 📋 User Stories
 
@@ -74,13 +82,13 @@
 ## 📋 Product Backlog
 | Número | Recurso Funcional           | Síntese do Requisito                                         | Status          |
 |:------:|-----------------------------|:------------------------------------------------------------:|:---------------:|
-|  RF01  | Importação de Histórico           | Importar dados históricos de desempenho dos jogadores para o banco de dados                           | 🔴 <br>A Fazer |
+|  RF01  | Importação de Histórico           | Importar dados históricos de desempenho dos jogadores para o banco de dados                           | 🟢 <br> Concluído |
 |  RF02  | Atualização de Partidas        | Permitir a importação de novos dados conforme a ocorrência de novos jogos              | 🔴 <br>A Fazer |
-|  RF03  | Profiling com IA        | Identificar automaticamente perfis de jogadores          | 🔴 <br>A Fazer |
+|  RF03  | Profiling com IA        | Identificar automaticamente perfis de jogadores          | 🟢 <br> Concluído |
 |  RF04  | Comparativo de Atletas    | Permitir a comparação entre jogadores para ajuste de treino e identificação de substitutos               | 🔴 <br>A Fazer |
-|  RF05  | Detecção de Queda    | Detectar automaticamente quando o desempenho de um atleta está abaixo do seu padrão histórico               | 🔴 <br>A Fazer |
+|  RF05  | Detecção de Desempenho   | Detectar automaticamente quando o desempenho de um atleta está diferente do seu padrão histórico               | 🟢 <br>Concluído |
 |  RF06  | Emissão de Alertas    | Emitir alertas para a comissão técnica ao detectar anomalias ou quedas relevantes               | 🔴 <br>A Fazer |
-|  RF07  | Dashboards de Análise    | Apresentar indicadores de desempenho através de visualizações gráficas adequadas               | 🔴 <br>A Fazer |
+|  RF07  | Dashboards de Análise    | Apresentar indicadores de desempenho através de visualizações gráficas adequadas               | 🟢 <br>Concluído |
 |  RF08  | Acesso Mobile    | Garantir que as análises e dados estejam acessíveis através de dispositivos móveis               | 🔴 <br>A Fazer |
 
 | Número  | Recurso Não-Funcional       | Síntese do Requisito                                         | Status          |
@@ -109,21 +117,16 @@
 Para seguir boas práticas de commits no seu projeto, consulte o repositório:  
 [Padrões de Commits](https://github.com/iuricode/padroes-de-commits).
 
-## 🔄 Scrum
-| Sprint                                    | Início     | Fim        | Status           | 📉 Burndown Chart                                        |
-|:-----------------------------------------:|:----------:|:----------:|:----------------:|:---------------------------------------------------------:|
-| 1 | 13/04/2026 | 30/04/2026 | 🟢 Concluído    | [Ver Gráfico](assets/burndown_sp1.png) |
-| 2 | 04/05/2026 | 21/05/2026 | 🟠 Em andamento  | [Ver Gráfico](assets/burndown_sp2.png) |
-| 3 | 25/05/2026 | 11/06/2026 | 🔴 A Fazer | [Ver Gráfico](assets/burndown_sp3.png) |
+
 
 ## 👨‍💻 Dev Team
 
 | Nome                               | Função              | GitHub                                          |
 |:----------------------------------:|:-------------------:|:-----------------------------------------------:|
 | Maurício Oliveira Medeiros Cepinho                     | Product Owner       | [GitHub](https://github.com/maucepinho)           |
-| Vitor Francisco de Azevedo Zonzini | Scrum Master        | [GitHub](https://github.com/frevisto)           |
-| Victor Hugo Dantas Carbajo         | Dev Team (Front-end)| [GitHub](https://github.com/Victor-Carbajo-DSM) |
+| Cláudio dos Santos Siqueira Júnior |  Scrum Master     | [GitHub](https://github.com/claudsaints)        |
 | Lucas Roque Alvim Cruz             | Dev Team (Front-end)| [GitHub](https://github.com/lucasroqe)          |
-| Nícolas Aquino    | Dev Team (Back-end) | [GitHub](https://github.com/Nickaqui)         |
-| Cláudio dos Santos Siqueira Júnior | Dev Team (Back-end) | [GitHub](https://github.com/claudsaints)        |
-| Luiz Felipe dos Santos             | Dev Team (Back-end) | [GitHub](https://github.com/felipe-sant)      |
+| Nícolas Aquino    | Dev Team (Front-end) | [GitHub](https://github.com/Nickaqui)         |
+| Luiz Felipe dos Santos             | Dev Team (Machine Learning) | [GitHub](https://github.com/felipe-sant)      |
+| Vitor Francisco de Azevedo Zonzini |Dev Team (Back-end)    | [GitHub](https://github.com/frevisto)           |
+| Victor Hugo Dantas Carbajo         | Dev Team (Machine Learning)| [GitHub](https://github.com/Victor-Carbajo-DSM) |

@@ -1,8 +1,8 @@
 "use client";
-
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { apiService } from "@/lib/api";
 
 export function LoginForm() {
   const router = useRouter();
@@ -19,24 +19,12 @@ export function LoginForm() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3030/auth/signin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Erro ao fazer login");
-      }
+      const data = await apiService.auth.signin({ email, password });
 
       setSuccess("Login realizado com sucesso!");
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      
+
       setTimeout(() => {
         router.push("/dashboard");
       }, 1000);
@@ -52,8 +40,8 @@ export function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md p-8 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-gray-100 dark:border-zinc-800">
-      <h2 className="text-2xl font-bold mb-6 text-center text-foreground">Entrar no Kicker IQ</h2>
+    <div className="w-full max-w-md p-8 dark:bg-zinc-900 rounded-2xl shadow-xl border border-gray-100 dark:border-zinc-800  dark:text-amber-50">
+     <h2 className="text-2xl font-bold mb-6 text-center italic uppercase tracking-tighter">Entrar no <span className="text-primary">Kicker</span></h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -62,7 +50,7 @@ export function LoginForm() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-primary outline-none transition-all"
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-zinc-800  dark:text-amber-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-primary outline-none transition-all"
             placeholder="seu@email.com"
             required
           />
@@ -74,7 +62,7 @@ export function LoginForm() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-primary outline-none transition-all"
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-zinc-800  dark:text-amber-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-primary outline-none transition-all"
             placeholder="••••••••"
             required
           />
@@ -102,18 +90,17 @@ export function LoginForm() {
           <div className="w-full border-t border-gray-200 dark:border-zinc-800"></div>
         </div>
         <div className="relative flex justify-center text-xs uppercase font-bold">
-          <span className="bg-white dark:bg-zinc-900 px-2 opacity-40">Ou continue com</span>
+          <span className="bg-white dark:bg-zinc-900 px-2 opacity-40 text-foreground">Ou continue com</span>
         </div>
       </div>
 
       <button
         type="button"
         onClick={() => {
-          // Aqui integraria com o Google Login do Firebase ou Google Auth SDK
           console.log("Iniciando Login com Google...");
           setError("Integração do Google Auth requer configuração de CLIENT_ID no frontend.");
         }}
-        className="mt-4 w-full py-3 border border-gray-200 dark:border-zinc-800 rounded-lg flex items-center justify-center gap-3 hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-all font-bold text-sm"
+        className="mt-4 w-full py-3 border border-gray-200 dark:border-zinc-800 rounded-lg flex items-center justify-center gap-3 hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-all font-bold text-sm text-foreground"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24">
           <path

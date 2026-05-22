@@ -23,7 +23,7 @@ const menuItems = [
 
 export default function ConfigPage() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--surface-1)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', width: '100%', background: 'var(--surface-1)' }}>
       <TopBar title="Configurações" />
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: '16px 14px', paddingBottom: 24 }}>

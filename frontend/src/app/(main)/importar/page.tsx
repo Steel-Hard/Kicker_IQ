@@ -78,7 +78,7 @@ export default function ImportarPage() {
   const [matchDate, setMatchDate] = useState('')
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--surface-1)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', width: '100%', background: 'var(--surface-1)' }}>
       <TopBar title="Importar partida" />
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px 14px', paddingBottom: 32 }}>

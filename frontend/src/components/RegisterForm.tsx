@@ -1,8 +1,8 @@
 "use client";
-
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { apiService } from "@/lib/api";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -20,22 +20,10 @@ export function RegisterForm() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3030/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Erro ao criar conta");
-      }
+      await apiService.auth.signup({ name, email, password });
 
       setSuccess("Conta criada com sucesso! Redirecionando...");
-      
+
       // Auto-login or redirect to login
       setTimeout(() => {
         router.push("/login");
@@ -52,7 +40,7 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="w-full max-w-md p-8 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-gray-100 dark:border-zinc-800">
+    <div className="w-full max-w-md p-8 dark:bg-zinc-900  dark:text-amber-50 rounded-2xl shadow-xl border border-gray-100 dark:border-zinc-800">
       <h2 className="text-2xl font-bold mb-6 text-center italic uppercase tracking-tighter">Criar Conta no <span className="text-primary">Kicker</span></h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -62,7 +50,7 @@ export function RegisterForm() {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-primary outline-none transition-all"
+            className="w-full px-4 py-3 rounded-lg border border-gray-200  dark:text-amber-50 dark:border-zinc-800  dark:bg-zinc-800/50 focus:ring-2 focus:ring-primary outline-none transition-all"
             placeholder="Seu nome"
             required
           />
@@ -74,7 +62,7 @@ export function RegisterForm() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-primary outline-none transition-all"
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-zinc-800  dark:text-amber-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-primary outline-none transition-all"
             placeholder="seu@email.com"
             required
           />

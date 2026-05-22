@@ -205,7 +205,7 @@ export default function CompararPage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--surface-1)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', width: '100%', background: 'var(--surface-1)' }}>
       <TopBar title="Comparar atletas" />
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 14px', paddingBottom: 24 }}>

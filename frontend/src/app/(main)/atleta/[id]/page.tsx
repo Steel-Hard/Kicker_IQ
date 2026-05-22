@@ -30,7 +30,7 @@ export default function AtletaPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--surface-1)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', width: '100%', background: 'var(--surface-1)' }}>
       <TopBar
         title={`#${athlete.number} · ${athlete.position}`}
         back

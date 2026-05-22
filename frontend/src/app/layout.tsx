@@ -14,8 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kicker IQ - Football Analysis",
+  title: "Kicker",
   description: "Advanced football player performance analysis",
+  icons: {
+    icon: "/kicker_shield.svg",
+  },
 };
 
 export default function RootLayout({

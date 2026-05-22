@@ -60,6 +60,19 @@ services:
     depends_on:
       - backend
 
+  # Script de ImportaÃ§Ã£o de Dados (Python)
+  kmeans-import:
+    build:
+      context: ./Kicker_IQ-model-kmeans
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://user:password@postgres-db:5432/kicker_iq_model
+      XLSX_PATH: ./data/players.xlsx
+    depends_on:
+      - postgres-db
+    profiles:
+      - tools # Permite rodar apenas quando solicitado (docker compose run kmeans-import)
+
 volumes:
   postgres_data:
   mongodb_data:
