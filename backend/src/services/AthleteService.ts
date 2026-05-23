@@ -1,4 +1,4 @@
-import { pool } from "../database/CloudDB";
+import { pool } from '../database/CloudDB';
 
 export class AthleteService {
   async getAllAthletes() {
@@ -13,12 +13,13 @@ export class AthleteService {
   async getAthleteById(id: number) {
     const result = await pool.query(
       `
-      SELECT *
-      FROM public.players
-      WHERE "Athlete ID" = $1
-      LIMIT 1
+        SELECT *
+        FROM public.players
+        WHERE "Athlete ID" = $1
+        ORDER BY "Start Date" DESC
+        LIMIT 1;
       `,
-      [id]
+      [id],
     );
 
     return result.rows;
