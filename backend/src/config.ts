@@ -9,10 +9,13 @@ const {
   CLOUDNARY_NAME,
   MONGODB_URI,
   MODEL_SERVICE_URL,
+  POSTGRES_URL,
 } = process.env;
 
 if (!CLIENT_ID && process.env.NODE_ENV === 'production') {
-  throw new Error('Missing environment variables: CLIENT_ID is required in production');
+  throw new Error(
+    'Missing environment variables: CLIENT_ID is required in production',
+  );
 }
 
 export const config = {
@@ -21,5 +24,6 @@ export const config = {
   CLOUDNARY_API_SECRET,
   CLOUDNARY_NAME,
   MONGODB_URI,
-  MODEL_SERVICE_URL: MODEL_SERVICE_URL || 'http://localhost:3001',
+  MODEL_SERVICE_URL: MODEL_SERVICE_URL || 'http://localhost:3002',
+  POSTGRES_URL,
 };

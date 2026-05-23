@@ -1,15 +1,54 @@
 'use client'
 
-import { Bell, ChevronRight, TrendingUp } from 'lucide-react'
+import { Bell, ChevronRight, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { KpiCard } from '@/components/kicker/kpi-card'
 import { AlertBanner } from '@/components/kicker/alert-banner'
 import { PerformanceChart } from '@/components/kicker/performance-chart'
-import { teamStats, athletes } from '@/lib/mock-data'
+import { teamStats as mockTeamStats } from '@/lib/mock-data'
 import { formatNumber, formatDelta } from '@/lib/utils'
+import { useAthletes } from '@/context/AthleteContext'
+import { useAuth } from '@/context/AuthContext'
+import { Avatar } from '@/components/kicker/avatar'
 
 export default function DashboardPage() {
+  const { loading: authLoading } = useAuth()
+  const { athletes, loading: athletesLoading, error } = useAthletes()
+
   const alertAthletes = athletes.filter((a) => a.hasAlert)
+  
+  const stats = athletes.length > 0 ? {
+    avgSpeed: athletes.reduce((acc, a) => acc + a.speed, 0) / athletes.length,
+    avgSprintDist: Math.round(athletes.reduce((acc, a) => acc + a.sprintDistance, 0) / athletes.length),
+    avgLoad: Math.round(athletes.reduce((acc, a) => acc + a.weeklyLoad, 0) / athletes.length),
+    avgPse: athletes.reduce((acc, a) => acc + a.pse, 0) / athletes.length,
+    speedDelta: athletes.reduce((acc, a) => acc + a.speedDelta, 0) / athletes.length,
+    sprintDelta: athletes.reduce((acc, a) => acc + a.sprintDelta, 0) / athletes.length,
+    loadDelta: athletes.reduce((acc, a) => acc + a.loadDelta, 0) / athletes.length,
+    pseDelta: athletes.reduce((acc, a) => acc + a.pseDelta, 0) / athletes.length,
+  } : {
+    avgSpeed: mockTeamStats.avgSpeed,
+    avgSprintDist: mockTeamStats.avgSprintDist,
+    avgLoad: mockTeamStats.avgLoad,
+    avgPse: mockTeamStats.avgPse,
+    speedDelta: mockTeamStats.speedDelta,
+    sprintDelta: mockTeamStats.sprintDelta,
+    loadDelta: mockTeamStats.loadDelta,
+    pseDelta: mockTeamStats.pseDelta,
+  }
+
+  const isLoading = authLoading || (athletesLoading && athletes.length === 0)
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--surface-1)' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)' }}>
+          <Loader2 className="animate-spin" size={24} />
+          <span style={{ marginLeft: 8 }}>Iniciando Dashboard...</span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--surface-1)' }}>
@@ -30,10 +69,10 @@ export default function DashboardPage() {
       >
         <div>
           <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.2 }}>
-            São Paulo FC
+            Kicker IQ Dashboard
           </div>
           <div style={{ fontSize: 10, color: 'var(--text-subtle)', lineHeight: 1.3 }}>
-            {teamStats.lastMatch.date}
+            Sessão Ativa: {new Date().toLocaleDateString()}
           </div>
         </div>
         <button
@@ -70,7 +109,13 @@ export default function DashboardPage() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: '16px 14px', paddingBottom: 24 }}>
 
-        {/* Last match result */}
+        {error && (
+          <div style={{ padding: 12, background: 'var(--danger-bg)', color: 'var(--danger-text)', borderRadius: 10, fontSize: 13 }}>
+            {error}
+          </div>
+        )}
+
+        {/* Last match result (Still mock as no backend endpoint yet) */}
         <div
           style={{
             background: 'var(--surface-2)',
@@ -84,7 +129,7 @@ export default function DashboardPage() {
         >
           <div>
             <div style={{ fontSize: 10, color: 'var(--text-subtle)', marginBottom: 3, letterSpacing: 0.3 }}>
-              ÚLTIMO RESULTADO · {teamStats.lastMatch.jornada}
+              ÚLTIMO RESULTADO · {mockTeamStats.lastMatch.jornada}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span
@@ -97,19 +142,19 @@ export default function DashboardPage() {
                   borderRadius: 20,
                 }}
               >
-                {teamStats.lastMatch.result}
+                {mockTeamStats.lastMatch.result}
               </span>
               <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-primary)' }}>
-                {teamStats.lastMatch.score}
+                {mockTeamStats.lastMatch.score}
               </span>
               <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>
-                vs {teamStats.lastMatch.opponent}
+                vs {mockTeamStats.lastMatch.opponent}
               </span>
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: 10, color: 'var(--text-subtle)' }}>
-              {teamStats.lastMatch.competition.split(' — ')[1] || 'Série A'}
+              Série A
             </div>
           </div>
         </div>
@@ -121,8 +166,8 @@ export default function DashboardPage() {
             {alertAthletes.map((a) => (
               <AlertBanner
                 key={a.id}
-                title={`${a.name} — ${a.alertTitle}`}
-                description={a.alertDesc}
+                title={`ID: ${a.id}${a.alertTitle ? ` — ${a.alertTitle}` : ''}`}
+                description={a.alertDesc || 'O atleta requer atenção especial.'}
                 action="Ver ↗"
               />
             ))}
@@ -137,27 +182,27 @@ export default function DashboardPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <KpiCard
               label="Vel. máx média"
-              value={`${formatNumber(teamStats.avgSpeed, 1)} km/h`}
-              delta={formatDelta(teamStats.speedDelta)}
-              deltaDirection="up"
+              value={`${formatNumber(stats.avgSpeed, 1)} km/h`}
+              delta={formatDelta(stats.speedDelta)}
+              deltaDirection={stats.speedDelta >= 0 ? "up" : "down"}
             />
             <KpiCard
               label="Dist. sprint média"
-              value={`${teamStats.avgSprintDist} m`}
-              delta={formatDelta(teamStats.sprintDelta)}
-              deltaDirection="up"
+              value={`${stats.avgSprintDist} m`}
+              delta={formatDelta(stats.sprintDelta)}
+              deltaDirection={stats.sprintDelta >= 0 ? "up" : "down"}
             />
             <KpiCard
               label="Carga semanal"
-              value={`${teamStats.avgLoad.toLocaleString('pt-BR')} AU`}
-              delta={formatDelta(teamStats.loadDelta)}
-              deltaDirection="up"
+              value={`${stats.avgLoad.toLocaleString('pt-BR')} AU`}
+              delta={formatDelta(stats.loadDelta)}
+              deltaDirection={stats.loadDelta >= 0 ? "up" : "down"}
             />
             <KpiCard
               label="PSE média"
-              value={formatNumber(teamStats.avgPse, 1)}
-              delta={formatDelta(teamStats.pseDelta)}
-              deltaDirection={teamStats.pseDelta > 10 ? 'down' : 'up'}
+              value={formatNumber(stats.avgPse, 1)}
+              delta={formatDelta(stats.pseDelta)}
+              deltaDirection={stats.pseDelta > 10 ? 'down' : 'up'}
             />
           </div>
         </div>
@@ -166,16 +211,6 @@ export default function DashboardPage() {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <div className="k-section-label">EVOLUÇÃO — DIST. DE SPRINT (m)</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span className="k-dot k-dot--success" />
-                <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>Média</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span className="k-dot k-dot--alert" />
-                <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>Alerta</span>
-              </div>
-            </div>
           </div>
           <div
             style={{
@@ -186,8 +221,8 @@ export default function DashboardPage() {
             }}
           >
             <PerformanceChart
-              data={teamStats.sprintHistory}
-              average={teamStats.avgSprintDist - 20}
+              data={mockTeamStats.sprintHistory}
+              average={stats.avgSprintDist - 20}
             />
           </div>
         </div>
@@ -244,7 +279,7 @@ export default function DashboardPage() {
 
         {/* Top performers */}
         <div>
-          <div className="k-section-label" style={{ marginBottom: 10 }}>TOP PERFORMERS — J22</div>
+          <div className="k-section-label" style={{ marginBottom: 10 }}>TOP PERFORMERS — GERAL</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             {athletes
               .sort((a, b) => b.speed - a.speed)
@@ -268,12 +303,10 @@ export default function DashboardPage() {
                   <span style={{ fontSize: 11, color: 'var(--text-subtle)', width: 16, textAlign: 'right' }}>
                     {i + 1}
                   </span>
-                  <span className={`k-avatar k-avatar--sm k-avatar--${athlete.profile}`}>
-                    {athlete.initials}
-                  </span>
+                  <Avatar id={athlete.id} initials={athlete.initials} profile={athlete.profile} size="sm" />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)' }}>
-                      {athlete.name}
+                      ID: {athlete.id}
                     </div>
                     <div style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{athlete.position}</div>
                   </div>

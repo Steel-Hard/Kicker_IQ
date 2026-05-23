@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { AuthProvider } from "@/context/AuthContext";
+import { AthleteProvider } from "@/context/AthleteContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +16,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kicker IQ - Football Analysis",
+  title: "Kicker",
   description: "Advanced football player performance analysis",
+  icons: {
+    icon: "/kicker_shield.svg",
+  },
 };
 
 export default function RootLayout({
@@ -30,7 +35,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <AthleteProvider>{children}</AthleteProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

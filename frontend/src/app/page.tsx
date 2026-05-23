@@ -1,23 +1,13 @@
-import { ThemeToggle } from "@/components/ThemeToggle";
-import Link from "next/link";
+import Link from 'next/link'
+
+import Image from "next/image";
+import Header from "@/components/Header";
 
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-sans selection:bg-primary selection:text-black">
       {/* Navegação Superior */}
-      <header className="px-6 lg:px-20 py-6 flex justify-between items-center bg-background/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center font-black text-black text-xl shadow-lg shadow-primary/20">
-            K
-          </div>
-          <span className="text-2xl font-black tracking-tighter uppercase italic">Kicker</span>
-        </div>
-        
-        <div className="flex items-center gap-6">
-          <ThemeToggle />
-          <Link href="/login" className="text-sm font-bold hover:text-primary transition-colors">Entrar</Link>
-        </div>
-      </header>
+      <Header showLink={true}/>
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -51,13 +41,13 @@ export default function Home() {
               <div className="absolute inset-0 bg-primary/20 rounded-2xl rotate-3 blur-2xl"></div>
               <div className="absolute inset-0 bg-secondary/10 rounded-2xl -rotate-3 blur-xl"></div>
               <div className="relative h-full w-full rounded-2xl border-4 border-primary/30 bg-zinc-900 overflow-hidden flex items-center justify-center group">
-                {/* Placeholder para a imagem do jogador */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent opacity-50"></div>
-                <div className="text-primary text-9xl font-black italic opacity-10 select-none group-hover:scale-110 transition-transform duration-700">KICKER</div>
-                <div className="absolute bottom-8 left-8 right-8 p-6 bg-black/80 backdrop-blur-md border border-white/10 rounded-xl">
-                  <p className="text-xs font-bold text-primary mb-1 uppercase tracking-tighter">Destaque da Semana</p>
-                  <p className="text-xl font-black uppercase text-white">Análise de Performance</p>
-                </div>
+                <Image 
+                  src="/kicker_promotional_img.png" 
+                  alt="Kicker Promotional Image" 
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  priority
+                />
               </div>
             </div>
           </div>
@@ -96,7 +86,7 @@ export default function Home() {
               { title: "QI Tático", desc: "Simulações avançadas que preveem resultados baseados em formações históricas.", icon: "🧠" },
               { title: "Rankings Globais", desc: "Sistema de avaliação de jogadores unificado em todas as ligas mundiais.", icon: "🌍" }
             ].map((feature, i) => (
-              <div key={i} className="p-10 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl hover:border-primary/50 transition-all group">
+              <div key={i} className="p-10  dark:bg-zinc-900 dark:text-white border border-gray-100 dark:border-zinc-800 rounded-3xl hover:border-primary/50 transition-all group">
                 <div className="text-4xl mb-6 grayscale group-hover:grayscale-0 transition-all">{feature.icon}</div>
                 <h3 className="text-xl font-bold mb-4 uppercase tracking-tight group-hover:text-primary transition-colors">{feature.title}</h3>
                 <p className="text-sm opacity-60 leading-relaxed">{feature.desc}</p>

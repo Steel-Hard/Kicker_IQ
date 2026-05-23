@@ -1,24 +1,92 @@
 'use client'
 
-import { useState } from 'react'
-import { Share2 } from 'lucide-react'
+import { useState, useEffect, use } from 'react'
+import { Share2, Loader2, BrainCircuit } from 'lucide-react'
 import { TopBar } from '@/components/kicker/top-bar'
 import { Avatar } from '@/components/kicker/avatar'
 import { AthletePill } from '@/components/kicker/athlete-pill'
-import { AlertBanner } from '@/components/kicker/alert-banner'
 import { KpiCard } from '@/components/kicker/kpi-card'
 import { KickerRadarChart } from '@/components/kicker/radar-chart'
-import { PerformanceChart } from '@/components/kicker/performance-chart'
-import { athletes } from '@/lib/mock-data'
+import type { Athlete } from '@/lib/mock-data'
 import { formatNumber, formatDelta } from '@/lib/utils'
+import { useAthletes } from '@/context/AthleteContext'
 
-const tabs = ['Desempenho', 'Histórico', 'Carga'] as const
+const tabs = ['Desempenho', 'Análise IA', 'Histórico', 'Carga'] as const
 type Tab = (typeof tabs)[number]
 
-export default function AtletaPage({ params }: { params: { id: string } }) {
-  const { id } = params
-  const athlete = athletes.find((a) => a.id === id) ?? athletes[0]
+interface PredictionResult {
+  clusterName: string;
+  confidence: string;
+  allScores: Array<{ cluster: string; score: string }>;
+}
+
+export default function AtletaPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const { getAthleteById, predictMatch } = useAthletes()
+  
+  const [athlete, setAthlete] = useState<Athlete | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [tab, setTab] = useState<Tab>('Desempenho')
+  
+  const [prediction, setPrediction] = useState<PredictionResult | null>(null)
+  const [predicting, setPredicting] = useState(false)
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true)
+      const data = await getAthleteById(id)
+      if (data) {
+        setAthlete(data)
+      } else {
+        setError('Atleta não localizado no sistema.')
+      }
+      setLoading(false)
+    }
+    load()
+  }, [id, getAthleteById])
+
+  const handlePredictSession = async () => {
+    if (!athlete || !athlete.metrics) return
+    setPredicting(true)
+    const result = await predictMatch({
+      distanceM: athlete.metrics.distanceM,
+      highIntensityRunningM: athlete.metrics.highIntensityRunningM,
+      highIntensityEvents: athlete.metrics.noHighIntensityEvents,
+      sprintDistanceM: athlete.sprintDistance,
+      numberOfSprints: athlete.metrics.noSprints,
+      topSpeedKph: athlete.speed,
+      avgSpeedKph: athlete.metrics.avgSpeedKph,
+      accelerations: athlete.metrics.accelerations,
+      decelerations: athlete.metrics.decelerations,
+      metresPerMinuteM: athlete.metrics.metresPerMinuteM,
+      workloadIntensity: athlete.metrics.workloadIntensity || 0
+    })
+    setPrediction(result)
+    setPredicting(false)
+  }
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--surface-1)' }}>
+        <TopBar title="Carregando..." back />
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)' }}>
+          <Loader2 className="animate-spin" size={24} />
+        </div>
+      </div>
+    )
+  }
+
+  if (!athlete) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--surface-1)' }}>
+        <TopBar title="Erro" back />
+        <div style={{ padding: 40, textAlign: 'center', color: 'var(--danger)' }}>
+          {error || 'Atleta não encontrado'}
+        </div>
+      </div>
+    )
+  }
 
   const radarData = {
     velocidade:    athlete.radar.velocidade,
@@ -30,9 +98,9 @@ export default function AtletaPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--surface-1)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', width: '100%', background: 'var(--surface-1)' }}>
       <TopBar
-        title={`#${athlete.number} · ${athlete.position}`}
+        title={`ID: ${athlete.id} · ${athlete.position}`}
         back
         right={
           <button
@@ -67,39 +135,22 @@ export default function AtletaPage({ params }: { params: { id: string } }) {
             alignItems: 'center',
           }}
         >
-          <Avatar initials={athlete.initials} profile={athlete.profile} size="lg" />
+          <Avatar id={athlete.id} initials={athlete.initials} profile={athlete.profile} size="lg" />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 17, fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: 6 }}>
-              {athlete.name}
+              ID: {athlete.id}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
               <AthletePill profile={athlete.profile} label={athlete.profileLabel} />
               <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
-                {athlete.age} anos
+                {athlete.position} · {athlete.group || 'N/A'}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Alert */}
-        {athlete.hasAlert && (
-          <AlertBanner
-            title={athlete.alertTitle!}
-            description={athlete.alertDesc}
-            action="Detalhes ↗"
-          />
-        )}
-
         {/* Tabs */}
-        <div
-          style={{
-            display: 'flex',
-            gap: 0,
-            background: 'var(--surface-3)',
-            borderRadius: 10,
-            padding: 3,
-          }}
-        >
+        <div style={{ display: 'flex', gap: 0, background: 'var(--surface-3)', borderRadius: 10, padding: 3 }}>
           {tabs.map((t) => (
             <button
               key={t}
@@ -110,12 +161,11 @@ export default function AtletaPage({ params }: { params: { id: string } }) {
                 borderRadius: 8,
                 border: 'none',
                 cursor: 'pointer',
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: 500,
-                fontFamily: 'var(--font-sans)',
                 background: tab === t ? 'var(--surface-5)' : 'transparent',
                 color: tab === t ? 'var(--text-primary)' : 'var(--text-subtle)',
-                transition: 'background 150ms, color 150ms',
+                transition: 'background 150ms',
               }}
             >
               {t}
@@ -127,7 +177,7 @@ export default function AtletaPage({ params }: { params: { id: string } }) {
         {tab === 'Desempenho' && (
           <>
             <div>
-              <div className="k-section-label" style={{ marginBottom: 10 }}>MÉTRICAS — J22</div>
+              <div className="k-section-label" style={{ marginBottom: 10 }}>MÉTRICAS — ÚLTIMA SESSÃO</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                 <KpiCard
                   label="Vel. máxima"
@@ -148,16 +198,15 @@ export default function AtletaPage({ params }: { params: { id: string } }) {
                   deltaDirection={athlete.loadDelta > 15 ? 'down' : 'up'}
                 />
                 <KpiCard
-                  label="PSE"
-                  value={formatNumber(athlete.pse, 1)}
-                  delta={formatDelta(athlete.pseDelta)}
-                  deltaDirection={athlete.pseDelta > 10 ? 'down' : 'up'}
+                  label="Distância Total"
+                  value={`${formatNumber(athlete.metrics?.distanceM || 0, 0)} m`}
+                  delta={""}
                 />
               </div>
             </div>
 
             <div>
-              <div className="k-section-label" style={{ marginBottom: 10 }}>PERFIL FÍSICO</div>
+              <div className="k-section-label" style={{ marginBottom: 10 }}>RADAR FÍSICO</div>
               <div
                 style={{
                   background: 'var(--surface-2)',
@@ -169,146 +218,84 @@ export default function AtletaPage({ params }: { params: { id: string } }) {
                   alignItems: 'center',
                 }}
               >
-                <KickerRadarChart data1={radarData} label1={athlete.initials} />
+                <KickerRadarChart data1={radarData} label1={`ID ${athlete.id.slice(-2)}`} />
               </div>
             </div>
           </>
         )}
 
-        {/* Tab content: Histórico */}
-        {tab === 'Histórico' && (
-          <div>
-            <div className="k-section-label" style={{ marginBottom: 10 }}>
-              EVOLUÇÃO — DISTÂNCIA SPRINT (m)
-            </div>
-            <div
-              style={{
-                background: 'var(--surface-2)',
-                border: '1px solid var(--border-default)',
-                borderRadius: 10,
-                padding: '12px 8px 8px',
-              }}
-            >
-              <PerformanceChart
-                data={athlete.matchHistory.map((m) => ({
-                  jornada: m.jornada,
-                  dist: m.sprintDist,
-                  alert: m.sprintDist > 800,
-                }))}
-              />
+        {/* Tab content: Análise IA */}
+        {tab === 'Análise IA' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <div className="k-section-label" style={{ marginBottom: 10 }}>COMPOSIÇÃO HISTÓRICA DO PERFIL</div>
+              <div style={{ background: 'var(--surface-2)', padding: 16, borderRadius: 12, border: '1px solid var(--border-default)' }}>
+                {athlete.clusterScores ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {Object.entries(athlete.clusterScores).sort((a, b) => b[1] - a[1]).map(([key, score]) => (
+                      <div key={key}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>{key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ')}</span>
+                          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)' }}>{score}%</span>
+                        </div>
+                        <div style={{ height: 6, background: 'var(--surface-4)', borderRadius: 3, overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${score}%`, background: 'var(--primary)', borderRadius: 3 }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--text-subtle)', fontSize: 12 }}>Dados insuficientes para análise histórica.</div>
+                )}
+              </div>
             </div>
 
-            <div style={{ marginTop: 16 }}>
-              <div className="k-section-label" style={{ marginBottom: 10 }}>HISTÓRICO DE PARTIDAS</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {athlete.matchHistory.slice().reverse().map((m, i, arr) => (
-                  <div
-                    key={m.jornada}
-                    style={{
-                      padding: '11px 12px',
-                      background: 'var(--surface-2)',
-                      border: '1px solid var(--border-default)',
-                      borderRadius: i === 0 ? '10px 10px 0 0' : i === arr.length - 1 ? '0 0 10px 10px' : 0,
-                      borderBottom: i < arr.length - 1 ? 'none' : '1px solid var(--border-default)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                    }}
-                  >
-                    <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-subtle)', width: 24 }}>
-                      {m.jornada}
-                    </span>
-                    <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4 }}>
-                      {[
-                        { label: 'Sprint', val: `${m.sprintDist}m` },
-                        { label: 'Vel.', val: `${formatNumber(m.maxSpeed, 1)}` },
-                        { label: 'Carga', val: m.carga.toLocaleString('pt-BR') },
-                        { label: 'PSE', val: formatNumber(m.pse, 1) },
-                      ].map(({ label, val }) => (
-                        <div key={label} style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)' }}>{val}</div>
-                          <div style={{ fontSize: 9, color: 'var(--text-subtle)', marginTop: 1 }}>{label}</div>
+            <div>
+              <div className="k-section-label" style={{ marginBottom: 10 }}>PREDIÇÃO DA SESSÃO ATUAL</div>
+              <div style={{ background: 'var(--surface-2)', padding: 16, borderRadius: 12, border: '1px solid var(--border-default)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <button 
+                  className="k-btn-outline" 
+                  onClick={handlePredictSession} 
+                  disabled={predicting}
+                  style={{ display: 'flex', gap: 8, justifyContent: 'center' }}
+                >
+                  {predicting ? <Loader2 size={16} className="animate-spin" /> : <BrainCircuit size={16} />}
+                  Executar Análise de IA
+                </button>
+
+                {prediction && (
+                  <div style={{ marginTop: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                      <div>
+                        <div style={{ fontSize: 10, color: 'var(--text-subtle)' }}>RESULTADO DA CLASSIFICAÇÃO</div>
+                        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--primary-strong)' }}>{prediction.clusterName.replace('_', ' ').toUpperCase()}</div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: 10, color: 'var(--text-subtle)' }}>CONFIANÇA</div>
+                        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--success)' }}>{prediction.confidence}</div>
+                      </div>
+                    </div>
+                    
+                    <div className="k-section-label" style={{ fontSize: 9, marginBottom: 8 }}>PONTUAÇÃO POR CLUSTER</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                      {prediction.allScores.map((s) => (
+                        <div key={s.cluster} style={{ background: 'var(--surface-3)', padding: '8px 10px', borderRadius: 8, border: '1px solid var(--border-subtle)' }}>
+                          <div style={{ fontSize: 9, color: 'var(--text-subtle)', marginBottom: 2 }}>{s.cluster.toUpperCase()}</div>
+                          <div style={{ fontSize: 13, fontWeight: 500 }}>{s.score}</div>
                         </div>
                       ))}
                     </div>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </div>
         )}
 
-        {/* Tab content: Carga */}
-        {tab === 'Carga' && (
-          <div>
-            <div className="k-section-label" style={{ marginBottom: 10 }}>CARGA ACUMULADA</div>
-            <div
-              style={{
-                background: 'var(--surface-2)',
-                border: '1px solid var(--border-default)',
-                borderRadius: 10,
-                padding: '12px 8px 8px',
-              }}
-            >
-              <PerformanceChart
-                data={athlete.matchHistory.map((m) => ({
-                  jornada: m.jornada,
-                  dist: m.carga,
-                  alert: m.pse > 8,
-                }))}
-              />
-            </div>
-
-            <div style={{ marginTop: 16 }}>
-              <div className="k-section-label" style={{ marginBottom: 10 }}>PSE POR JORNADA</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {athlete.matchHistory.slice().reverse().map((m) => {
-                  const pct = (m.pse / 10) * 100
-                  const color = m.pse > 8
-                    ? 'var(--danger)'
-                    : m.pse > 7
-                    ? 'var(--warning)'
-                    : 'var(--chart-baseline)'
-                  return (
-                    <div key={m.jornada} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <span style={{ fontSize: 11, color: 'var(--text-subtle)', width: 24, flexShrink: 0 }}>
-                        {m.jornada}
-                      </span>
-                      <div
-                        style={{
-                          flex: 1,
-                          height: 6,
-                          background: 'var(--surface-4)',
-                          borderRadius: 3,
-                          overflow: 'hidden',
-                        }}
-                      >
-                        <div
-                          style={{
-                            height: '100%',
-                            width: `${pct}%`,
-                            background: color,
-                            borderRadius: 3,
-                          }}
-                        />
-                      </div>
-                      <span
-                        style={{
-                          fontSize: 12,
-                          fontWeight: 500,
-                          color,
-                          width: 28,
-                          textAlign: 'right',
-                          flexShrink: 0,
-                        }}
-                      >
-                        {formatNumber(m.pse, 1)}
-                      </span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
+        {/* Histórico e Carga (simplificados) */}
+        {(tab === 'Histórico' || tab === 'Carga') && (
+          <div style={{ background: 'var(--surface-2)', padding: 20, borderRadius: 12, textAlign: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
+            Visualização em desenvolvimento para este perfil de dados.
           </div>
         )}
 

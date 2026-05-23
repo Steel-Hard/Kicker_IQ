@@ -327,7 +327,8 @@ body {
 .k-dot--muted   { background: var(--text-subtle); }
 
 .app-shell {
-  max-width: 420px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   min-height: 100dvh;
   background: var(--surface-1);

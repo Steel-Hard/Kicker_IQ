@@ -11,5 +11,6 @@ declare namespace NodeJS {
     CLOUDNARY_API_KEY: string;
     CLOUDNARY_API_SECRET: string;
     MONGODB_URI: string;
+    POSTGRES_URL: string;
   }
 }

@@ -17,10 +17,10 @@ export function NavBar() {
 
   return (
     <nav className="app-nav">
-      {items.map(({ href, icon: Icon, label, primary }) => {
+      {items.map(({ href, icon: Icon, label}) => {
         const active = pathname === href || pathname.startsWith(href + '/')
 
-        if (primary) {
+        if (items[2].primary) {
           return (
             <Link key={href} href={href} className="app-nav-link">
               <span

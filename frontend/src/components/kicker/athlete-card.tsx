@@ -26,7 +26,7 @@ export function AthleteCard({ athlete }: AthleteCardProps) {
         position: 'relative',
       }}
     >
-      <Avatar initials={athlete.initials} profile={athlete.profile} size="md" />
+      <Avatar id={athlete.id} initials={athlete.initials} profile={athlete.profile} size="md" />
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
@@ -40,7 +40,7 @@ export function AthleteCard({ athlete }: AthleteCardProps) {
               whiteSpace: 'nowrap',
             }}
           >
-            {athlete.name}
+            ID: {athlete.id}
           </span>
           {athlete.hasAlert && (
             <span className="k-dot k-dot--alert" />
@@ -48,7 +48,7 @@ export function AthleteCard({ athlete }: AthleteCardProps) {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
-            #{athlete.number} · {athlete.position}
+            {athlete.position} · {athlete.group || 'N/A'}
           </span>
           <AthletePill profile={athlete.profile} label={athlete.profileLabel} />
         </div>

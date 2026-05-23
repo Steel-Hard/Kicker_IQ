@@ -3,11 +3,12 @@
 import { useState, useMemo } from 'react'
 import { Search, SlidersHorizontal } from 'lucide-react'
 import { TopBar } from '@/components/kicker/top-bar'
-import { AthleteCard } from '@/components/kicker/athlete-card'
+import { AthleteList } from '@/components/kicker/athlete-list'
 import { FilterChips, type FilterValue } from '@/components/kicker/filter-chips'
-import { athletes } from '@/lib/mock-data'
+import { useAthletes } from '@/context/AthleteContext'
 
 export default function ElencoPage() {
+  const { athletes, loading, error } = useAthletes()
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<FilterValue>('todos')
 
@@ -15,12 +16,13 @@ export default function ElencoPage() {
     return athletes.filter((a) => {
       const matchesQuery =
         !query ||
-        a.name.toLowerCase().includes(query.toLowerCase()) ||
-        a.position.toLowerCase().includes(query.toLowerCase())
+        a.id.includes(query) ||
+        a.position.toLowerCase().includes(query.toLowerCase()) ||
+        (a.group && a.group.toLowerCase().includes(query.toLowerCase()))
       const matchesFilter = filter === 'todos' || a.profile === filter
       return matchesQuery && matchesFilter
     })
-  }, [query, filter])
+  }, [query, filter, athletes])
 
   const alertCount = athletes.filter((a) => a.hasAlert).length
 
@@ -50,6 +52,14 @@ export default function ElencoPage() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingTop: 14 }}>
 
+        {error && (
+          <div style={{ padding: '0 14px' }}>
+            <div style={{ padding: 12, background: 'var(--danger-bg)', color: 'var(--danger-text)', borderRadius: 10, fontSize: 13 }}>
+              {error}
+            </div>
+          </div>
+        )}
+
         {/* Search */}
         <div style={{ padding: '0 14px' }}>
           <div
@@ -68,7 +78,7 @@ export default function ElencoPage() {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar atleta ou posição…"
+              placeholder="Buscar por ID, posição ou grupo…"
               style={{
                 flex: 1,
                 background: 'transparent',
@@ -86,31 +96,12 @@ export default function ElencoPage() {
         <FilterChips value={filter} onChange={setFilter} />
 
         {/* List */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 6,
-            padding: '0 14px',
-            paddingBottom: 24,
-          }}
-        >
-          {filtered.length === 0 ? (
-            <div
-              style={{
-                textAlign: 'center',
-                padding: '40px 0',
-                color: 'var(--text-subtle)',
-                fontSize: 13,
-              }}
-            >
-              Nenhum atleta encontrado
-            </div>
-          ) : (
-            filtered.map((athlete) => (
-              <AthleteCard key={athlete.id} athlete={athlete} />
-            ))
-          )}
+        <div style={{ padding: '0 14px', paddingBottom: 24 }}>
+          <AthleteList 
+            athletes={filtered} 
+            loading={loading && athletes.length === 0} 
+            emptyMessage="Nenhum atleta encontrado com os filtros atuais."
+          />
         </div>
       </div>
     </div>

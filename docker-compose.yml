@@ -27,7 +27,7 @@ services:
     ports:
       - "3002:3000"
     environment:
-      DATABASE_URL: postgresql://user:password@postgres-db:5432/kicker_iq_model
+      POSTGRESQL_URL: ${POSTGRES_URL}
       PORT: 3000
     depends_on:
       - postgres-db
@@ -42,6 +42,7 @@ services:
     environment:
       MONGODB_URI: mongodb://mongodb:27017/vesta
       MODEL_SERVICE_URL: http://model-service:3000
+      POSTGRES_URL: ${POSTGRES_URL}
       JWT_SECRET: ${JWT_SECRET:-super-secret-key-123}
       CLIENT_ID: ${CLIENT_ID:-dummy-id}
     depends_on:
@@ -59,6 +60,19 @@ services:
       NEXT_PUBLIC_API_URL: http://localhost:3030
     depends_on:
       - backend
+
+  # Script de ImportaÃ§Ã£o de Dados (Python)
+  kmeans-import:
+    build:
+      context: ./Kicker_IQ-model-kmeans
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: ${POSTGRES_URL}
+      XLSX_PATH: ./data/players.xlsx
+    depends_on:
+      - postgres-db
+    profiles:
+      - tools # Permite rodar apenas quando solicitado (docker compose run kmeans-import)
 
 volumes:
   postgres_data:
