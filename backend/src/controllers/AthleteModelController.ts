@@ -4,10 +4,16 @@ import ModelIntegrationService from '../services/ModelIntegrationService';
 class AthleteModelController {
   public async getProfile(req: Request, res: Response) {
     try {
+      const { id } = req.query;
+
+      if (id) {
+        const result = await ModelIntegrationService.getAthleteMetrics(
+          Number(id),
+        );
+        return res.status(200).json(result);
+      }
+
       const metrics = req.body;
-
-      // ValidaÃ§Ã£o bÃ¡sica pode ser feita aqui se necessÃ¡rio
-
       const result =
         await ModelIntegrationService.predictAthleteProfile(metrics);
 

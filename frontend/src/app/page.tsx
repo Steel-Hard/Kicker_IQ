@@ -1,5 +1,5 @@
-import { ThemeToggle } from "@/components/ThemeToggle";
-import Link from "next/link";
+import Link from 'next/link'
+
 import Image from "next/image";
 import Header from "@/components/Header";
 

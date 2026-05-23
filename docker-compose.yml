@@ -27,7 +27,7 @@ services:
     ports:
       - "3002:3000"
     environment:
-      DATABASE_URL: postgresql://user:password@postgres-db:5432/kicker_iq_model
+      POSTGRESQL_URL: ${POSTGRES_URL}
       PORT: 3000
     depends_on:
       - postgres-db
@@ -42,6 +42,7 @@ services:
     environment:
       MONGODB_URI: mongodb://mongodb:27017/vesta
       MODEL_SERVICE_URL: http://model-service:3000
+      POSTGRES_URL: ${POSTGRES_URL}
       JWT_SECRET: ${JWT_SECRET:-super-secret-key-123}
       CLIENT_ID: ${CLIENT_ID:-dummy-id}
     depends_on:
@@ -66,7 +67,7 @@ services:
       context: ./Kicker_IQ-model-kmeans
       dockerfile: Dockerfile
     environment:
-      DATABASE_URL: postgresql://user:password@postgres-db:5432/kicker_iq_model
+      DATABASE_URL: ${POSTGRES_URL}
       XLSX_PATH: ./data/players.xlsx
     depends_on:
       - postgres-db

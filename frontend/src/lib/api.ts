@@ -38,5 +38,33 @@ export const apiService = {
     signin: (credentials: Record<string, unknown>) => apiService.post<{ token: string, user: { name: string } }>("/auth/signin", credentials),
     signup: (userData: Record<string, unknown>) => apiService.post<unknown>("/auth/signup", userData),
     google: (idToken: string) => apiService.post<unknown>(`/auth/google/${idToken}`, {}),
+  },
+
+  // Athlete specific methods
+  athletes: {
+    getAll: (token: string) => apiService.get<Record<string, unknown>[]>("/athletes", token),
+    getById: (id: string, token: string) => apiService.get<Record<string, unknown>>(`/athletes/${id}`, token),
+    getByDate: (date: string, token: string) => apiService.get<Record<string, unknown>[]>(`/athletes/date/${date}`, token),
+    import: (records: Record<string, unknown>[], token: string) => 
+      request<{ message: string }>("/athletes/import", {
+        method: "POST",
+        body: JSON.stringify({ records }),
+        headers: { "Authorization": `Bearer ${token}` }
+      }),
+  },
+
+  // Model specific methods
+  model: {
+    predict: (metrics: Record<string, unknown>, token: string) => 
+      request<{ clusterName: string; [key: string]: unknown }>("/model/predict", { 
+        method: "POST", 
+        body: JSON.stringify(metrics),
+        headers: { "Authorization": `Bearer ${token}` }
+      }),
+    getProfile: (id: string, token: string) =>
+      request<{ clusterName: string; [key: string]: unknown }>(`/model/predict?id=${id}`, {
+        method: "POST", // The backend route is POST
+        headers: { "Authorization": `Bearer ${token}` }
+      }),
   }
 };

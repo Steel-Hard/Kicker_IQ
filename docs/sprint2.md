@@ -1,3 +1,14 @@
+## USERS STORIES CONTEMPLADOS 
+
+RF01  Importação de Histórico -         Importar dados históricos de desempenho dos jogadores para o banco de dados.  
+
+RF05  Detecção de Desempenho  - Detectar automaticamente quando o desempenho de um atleta está diferente do seu padrão histórico.          
+
+RF07  Dashboards de Análise -    Apresentar indicadores de desempenho através de visualizações gráficas adequadas.  
+
+
+
+
 | **BACKLOG**                                                 | **Poker Planning** |
 |-------------------------------------------------------------|--------------------|
 | Criar rotas para pesquisa de jogadores                      | 7                  |

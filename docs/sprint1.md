@@ -1,3 +1,8 @@
+## USER STORIES CONTEMPLADOS 
+
+RF03  Profiling com IA       - Identificar automaticamente perfis de jogadores.     
+
+
 | **BACKLOG**                                                  | **Poker Planning** |
 |--------------------------------------------------------------|--------------------|
 | Criar telas do front                                         | 1                  |

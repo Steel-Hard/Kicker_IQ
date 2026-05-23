@@ -16,15 +16,15 @@
 ## 📝 Descrição
 
 
-<img src="assets/kicker-logo.jpg" min-width="400px" max-width="400px" width="400px" align="left" alt="Logo do KICKER">
 
 <div style="text-align: justify;">
+<img src="assets/kicker-logo.jpg" min-width="400px" max-width="400px" width="400px" align="left" alt="Logo do KICKER">
   <h2 style="text-align: justify;">
     Bem vindos!
   </h2>
   <p>Steel-Hard entrega o Kicker_IQ, software para apoio à tomada de decisão em elencos de futebol! Nosso projeto usa de tecnologias correntes e técnicas avançadas no desenvolvimento de software.</p>
   <p style="text-align: justify;">
-    O <strong>Kicker_IQ</strong> consiste no desenvolvimento de um protótipo de sistema de informações inteligente focado no monitoramento e <strong>análise de desempenho físico de atletas de futebol</strong>. O objetivo central é transformar grandes volumes de dados históricos de partidas em insights acionáveis com técnicas de inteligência artificial para a comissão técnica, otimizando a preparação física e a tomada de decisão tática.
+    O <strong>Kicker_IQ</strong> consiste no desenvolvimento de um protótipo de sistema de informações inteligente focado no monitoramento e <strong>análise de desempenho físico de atletas de futebol</strong>. O objetivo central é transformar grandes volumes de dados históricos de jogadores em insights com técnicas de machine learning para que uma comissão técnica realize uma avaliação, otimizando a preparação física e a tomada de decisão tática.
   </p style="text-align: justify;">
   <br>
 </div>
@@ -58,11 +58,11 @@
 ---
 
 ## 🔄 Scrum
-| Sprint                                    | Início     | Fim        | Status           | 📉 Burndown Chart                                        |
-|:-----------------------------------------:|:----------:|:----------:|:----------------:|:---------------------------------------------------------:|
-| 1 | 13/04/2026 | 30/04/2026 | 🟢 Concluído    | [Ver Gráfico](assets/burndown_1.png) |
-| 2 | 04/05/2026 | 21/05/2026 | 🟠 Em andamento  | [Ver Gráfico](assets/burndown_2.png) |
-| 3 | 25/05/2026 | 11/06/2026 | 🔴 A Fazer | [Ver Gráfico](assets/burndown_sp3.png) |
+| Sprint                                    | Início     | Fim        | Status           | 📉 Burndown Chart                                        | Sprint Backlog/Review  |
+|:-----------------------------------------:|:----------:|:----------:|:----------------:|:---------------------------------------------------------:|:-----------------:|
+| 1 | 13/04/2026 | 30/04/2026 | 🟢 Concluído    | [Ver Gráfico](assets/burndown_1.png) |  [Ver](docs/sprint1.md) |
+| 2 | 04/05/2026 | 21/05/2026 | 🟠 Em andamento  | [Ver Gráfico](assets/burndown_2.png) |  [Ver](docs/sprint2.md) |
+| 3 | 25/05/2026 | 11/06/2026 | 🔴 A Fazer | [Ver Gráfico](assets/burndown_sp3.png) |  [Ver](docs/sprint3.md) |
 
 ---
 
@@ -111,11 +111,12 @@
  docker-compose up --build
  ```
 
-### Convenções de Commit
 
 
-Para seguir boas práticas de commits no seu projeto, consulte o repositório:  
-[Padrões de Commits](https://github.com/iuricode/padroes-de-commits).
+
+## 🧮 Trello
+Foi utilizado o trello para gerenciar as demandas e andamento do projeto, abaixo o link para visualizar:
+[Trello](https://trello.com/b/D3Ij59uJ/kicker)
 
 
 
@@ -130,3 +131,10 @@ Para seguir boas práticas de commits no seu projeto, consulte o repositório:
 | Luiz Felipe dos Santos             | Dev Team (Machine Learning) | [GitHub](https://github.com/felipe-sant)      |
 | Vitor Francisco de Azevedo Zonzini |Dev Team (Back-end)    | [GitHub](https://github.com/frevisto)           |
 | Victor Hugo Dantas Carbajo         | Dev Team (Machine Learning)| [GitHub](https://github.com/Victor-Carbajo-DSM) |
+
+
+## Convenções de Commit
+
+
+Para seguir boas práticas de commits no seu projeto, consulte o repositório:  
+[Padrões de Commits](https://github.com/iuricode/padroes-de-commits).

@@ -1,4 +1,3 @@
-import Header from "@/components/Header";
 import { NavBar } from "@/components/kicker/nav-bar";
 
 export default function MainLayout({

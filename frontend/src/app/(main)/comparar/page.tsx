@@ -1,13 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Plus } from 'lucide-react'
+import { X, Plus, Loader2 } from 'lucide-react'
 import { TopBar } from '@/components/kicker/top-bar'
 import { Avatar } from '@/components/kicker/avatar'
 import { AthletePill } from '@/components/kicker/athlete-pill'
 import { KickerRadarChart } from '@/components/kicker/radar-chart'
-import { athletes, type Athlete } from '@/lib/mock-data'
-import { formatNumber, formatDelta } from '@/lib/utils'
+import type { Athlete } from '@/lib/mock-data'
+import { formatNumber } from '@/lib/utils'
+import { useAthletes } from '@/context/AthleteContext'
 
 type MetricKey = 'speed' | 'sprintDistance' | 'weeklyLoad' | 'pse'
 
@@ -100,10 +101,10 @@ function AthleteSlot({
       >
         <X size={10} color="var(--text-subtle)" />
       </button>
-      <Avatar initials={athlete.initials} profile={athlete.profile} size="md" />
+      <Avatar id={athlete.id} initials={athlete.initials} profile={athlete.profile} size="md" />
       <div style={{ marginTop: 8, textAlign: align === 'right' ? 'right' : 'left' }}>
         <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.2 }}>
-          {athlete.name.split(' ')[0]}
+          ID: {athlete.id}
         </div>
         <div style={{ marginTop: 3 }}>
           <AthletePill profile={athlete.profile} label={athlete.profileLabel} />
@@ -114,10 +115,12 @@ function AthleteSlot({
 }
 
 function AthletePickerModal({
+  athletes,
   onSelect,
   onClose,
   excluded,
 }: {
+  athletes: Athlete[]
   onSelect: (a: Athlete) => void
   onClose: () => void
   excluded?: string
@@ -170,10 +173,10 @@ function AthletePickerModal({
                   width: '100%',
                 }}
               >
-                <Avatar initials={a.initials} profile={a.profile} size="md" />
+                <Avatar id={a.id} initials={a.initials} profile={a.profile} size="md" />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>{a.name}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>#{a.number} · {a.position}</div>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>ID: {a.id}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{a.position} · {a.group}</div>
                 </div>
                 <AthletePill profile={a.profile} label={a.profileLabel} />
               </button>
@@ -185,10 +188,17 @@ function AthletePickerModal({
 }
 
 export default function CompararPage() {
-  const [athlete1, setAthlete1] = useState<Athlete | undefined>(athletes[0])
-  const [athlete2, setAthlete2] = useState<Athlete | undefined>(athletes[4])
+  const { athletes, loading } = useAthletes()
+  
+  const [athlete1, setAthlete1] = useState<Athlete | undefined>()
+  const [athlete2, setAthlete2] = useState<Athlete | undefined>()
   const [picker, setPicker] = useState<1 | 2 | null>(null)
-  const [tab, setTab] = useState<'Desempenho' | 'Físico'>('Desempenho')
+  const [tab, setTab] = useState<'Métricas' | 'IA' | 'Físico'>('Métricas')
+
+  if (!athlete1 && !athlete2 && athletes.length >= 2) {
+    setAthlete1(athletes[0])
+    setAthlete2(athletes[1])
+  }
 
   function handleSelect(a: Athlete) {
     if (picker === 1) setAthlete1(a)
@@ -202,6 +212,17 @@ export default function CompararPage() {
     if (v1 === v2) return null
     if (higher) return v1 > v2 ? 1 : 2
     return v1 < v2 ? 1 : 2
+  }
+
+  if (loading && athletes.length === 0) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--surface-1)' }}>
+        <TopBar title="Comparar atletas" />
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)' }}>
+          <Loader2 className="animate-spin" size={24} />
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -250,7 +271,7 @@ export default function CompararPage() {
               padding: 3,
             }}
           >
-            {(['Desempenho', 'Físico'] as const).map((t) => (
+            {(['Métricas', 'IA', 'Físico'] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
@@ -260,12 +281,12 @@ export default function CompararPage() {
                   borderRadius: 8,
                   border: 'none',
                   cursor: 'pointer',
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: 500,
                   fontFamily: 'var(--font-sans)',
                   background: tab === t ? 'var(--surface-5)' : 'transparent',
                   color: tab === t ? 'var(--text-primary)' : 'var(--text-subtle)',
-                  transition: 'background 150ms, color 150ms',
+                  transition: 'background 150ms',
                 }}
               >
                 {t}
@@ -275,7 +296,7 @@ export default function CompararPage() {
         )}
 
         {/* Radar chart */}
-        {tab === 'Físico' && athlete1 && (
+        {tab === 'Físico' && (athlete1 || athlete2) && (
           <div>
             <div className="k-section-label" style={{ marginBottom: 10 }}>RADAR — PERFIL FÍSICO</div>
             <div
@@ -290,19 +311,52 @@ export default function CompararPage() {
               }}
             >
               <KickerRadarChart
-                data1={athlete1.radar}
+                data1={athlete1?.radar}
                 data2={athlete2?.radar}
-                label1={athlete1.initials}
-                label2={athlete2?.initials}
+                label1={athlete1 ? `ID ${athlete1.id.slice(-2)}` : undefined}
+                label2={athlete2 ? `ID ${athlete2.id.slice(-2)}` : undefined}
               />
             </div>
           </div>
         )}
 
+        {/* IA Comparison */}
+        {tab === 'IA' && (athlete1 || athlete2) && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div className="k-section-label">DISTRIBUIÇÃO DE PERFIL (IA)</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              {[athlete1, athlete2].map((a, idx) => (
+                <div key={idx} style={{ background: 'var(--surface-2)', padding: 12, borderRadius: 10, border: '1px solid var(--border-default)' }}>
+                  <div style={{ fontSize: 10, color: 'var(--text-subtle)', marginBottom: 8, textAlign: 'center' }}>
+                    {a ? `ID ${a.id}` : 'Nenhum Atleta'}
+                  </div>
+                  {a?.clusterScores ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {Object.entries(a.clusterScores).map(([key, score]) => (
+                        <div key={key}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, marginBottom: 2 }}>
+                            <span style={{ color: 'var(--text-secondary)' }}>{key.replace('_', ' ')}</span>
+                            <span style={{ fontWeight: 500 }}>{score}%</span>
+                          </div>
+                          <div style={{ height: 4, background: 'var(--surface-4)', borderRadius: 2, overflow: 'hidden' }}>
+                            <div style={{ height: '100%', width: `${score}%`, background: 'var(--primary)', borderRadius: 2 }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div style={{ height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 10 }}>Sem dados de IA</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Stats comparison */}
-        {tab === 'Desempenho' && (athlete1 || athlete2) && (
+        {tab === 'Métricas' && (athlete1 || athlete2) && (
           <div>
-            <div className="k-section-label" style={{ marginBottom: 10 }}>COMPARATIVO — J22</div>
+            <div className="k-section-label" style={{ marginBottom: 10 }}>COMPARATIVO — MÉTRICAS</div>
             <div
               style={{
                 background: 'var(--surface-2)',
@@ -374,70 +428,11 @@ export default function CompararPage() {
           </div>
         )}
 
-        {/* Deltas */}
-        {tab === 'Desempenho' && athlete1 && athlete2 && (
-          <div>
-            <div className="k-section-label" style={{ marginBottom: 10 }}>TENDÊNCIA — VS JORNADA ANTERIOR</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              <div
-                style={{
-                  background: 'var(--surface-2)',
-                  border: '1px solid var(--border-default)',
-                  borderRadius: 10,
-                  padding: '12px',
-                }}
-              >
-                <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>
-                  {athlete1.name.split(' ')[0]}
-                </div>
-                {[
-                  { label: 'Velocidade', val: athlete1.speedDelta },
-                  { label: 'Sprint', val: athlete1.sprintDelta },
-                  { label: 'Carga', val: athlete1.loadDelta },
-                  { label: 'PSE', val: athlete1.pseDelta },
-                ].map(({ label, val }) => (
-                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{label}</span>
-                    <span style={{ fontSize: 11, fontWeight: 500, color: val >= 0 ? 'var(--chart-baseline)' : 'var(--danger)' }}>
-                      {formatDelta(val)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div
-                style={{
-                  background: 'var(--surface-2)',
-                  border: '1px solid var(--border-default)',
-                  borderRadius: 10,
-                  padding: '12px',
-                }}
-              >
-                <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>
-                  {athlete2.name.split(' ')[0]}
-                </div>
-                {[
-                  { label: 'Velocidade', val: athlete2.speedDelta },
-                  { label: 'Sprint', val: athlete2.sprintDelta },
-                  { label: 'Carga', val: athlete2.loadDelta },
-                  { label: 'PSE', val: athlete2.pseDelta },
-                ].map(({ label, val }) => (
-                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{label}</span>
-                    <span style={{ fontSize: 11, fontWeight: 500, color: val >= 0 ? 'var(--chart-baseline)' : 'var(--danger)' }}>
-                      {formatDelta(val)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
       </div>
 
       {picker !== null && (
         <AthletePickerModal
+          athletes={athletes}
           onSelect={handleSelect}
           onClose={() => setPicker(null)}
           excluded={picker === 1 ? athlete2?.id : athlete1?.id}

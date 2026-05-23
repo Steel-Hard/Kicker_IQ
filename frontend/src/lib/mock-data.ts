@@ -14,11 +14,12 @@ export interface Athlete {
   initials: string
   number: number
   position: string
+  group?: string // Added: Athlete Groups
   profile: AthleteProfile
   profileLabel: string
   age: number
-  speed: number
-  sprintDistance: number
+  speed: number // topSpeedKph
+  sprintDistance: number // sprintDistanceM
   weeklyLoad: number
   pse: number
   speedDelta: number
@@ -37,6 +38,32 @@ export interface Athlete {
     tecnica: number
   }
   matchHistory: MatchRecord[]
+  
+  // New metrics from the detailed data structure
+  metrics?: {
+    distanceM: number
+    metresPerMinuteM: number
+    highIntensityRunningM: number
+    noHighIntensityEvents: number
+    noSprints: number
+    rawTopSpeedKph: number
+    topSpeedKph: number
+    avgSpeedKph: number
+    accelerations: number
+    decelerations: number
+    durationMins: number
+    workloadIntensity: number | null
+    pctMaxSpeed: number | null
+    pctRawMaxSpeedKph: number | null
+  }
+
+  // AI Cluster Distribution Scores (Task 1)
+  clusterScores?: {
+    resistente: number;
+    explosivo: number;
+    baixo_volume: number;
+    moderado: number;
+  }
 }
 
 export const athletes: Athlete[] = [

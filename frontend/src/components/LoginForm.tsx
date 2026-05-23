@@ -1,11 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { apiService } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 export function LoginForm() {
-  const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -22,12 +22,7 @@ export function LoginForm() {
       const data = await apiService.auth.signin({ email, password });
 
       setSuccess("Login realizado com sucesso!");
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 1000);
+      login(data.user, data.token);
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);

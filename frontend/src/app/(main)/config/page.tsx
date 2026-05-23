@@ -3,6 +3,7 @@
 import { TopBar } from '@/components/kicker/top-bar'
 import { Avatar } from '@/components/kicker/avatar'
 import { LogOut, Bell, Shield, HelpCircle, ChevronRight, Moon } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
 
 const menuItems = [
   {
@@ -22,6 +23,8 @@ const menuItems = [
 ]
 
 export default function ConfigPage() {
+  const { user, logout } = useAuth()
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', width: '100%', background: 'var(--surface-1)' }}>
       <TopBar title="Configurações" />
@@ -40,14 +43,18 @@ export default function ConfigPage() {
             gap: 14,
           }}
         >
-          <Avatar initials="AC" profile="resist" size="lg" />
+          <Avatar 
+            initials={user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'AD'} 
+            profile="baixa" 
+            size="lg" 
+          />
           <div>
             <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-primary)', marginBottom: 3 }}>
-              Analista Chefe
+              {user?.name || 'Analista Chefe'}
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>São Paulo FC · Desempenho</div>
             <div style={{ fontSize: 11, color: 'var(--primary-strong)', marginTop: 4 }}>
-              analista@saopaulofc.net
+              {user?.email || 'analista@saopaulofc.net'}
             </div>
           </div>
         </div>
@@ -118,8 +125,9 @@ export default function ConfigPage() {
 
         {/* Logout */}
         <button
+          onClick={logout}
           className="k-btn-outline"
-          style={{ width: '100%', color: 'var(--danger)', borderColor: 'rgba(226,75,74,0.3)' }}
+          style={{ width: '100%', color: 'var(--danger)', borderColor: 'rgba(226,75,74,0.3)', cursor: 'pointer' }}
         >
           <LogOut size={14} />
           Sair da conta
