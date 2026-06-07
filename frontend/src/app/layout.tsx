@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/context/AuthContext";
 import { AthleteProvider } from "@/context/AthleteContext";
+import { AlertProvider } from "@/context/AlertContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +38,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
           <AuthProvider>
-            <AthleteProvider>{children}</AthleteProvider>
+            <AthleteProvider>
+              <AlertProvider>{children}</AlertProvider>
+            </AthleteProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

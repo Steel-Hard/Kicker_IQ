@@ -311,8 +311,8 @@ export default function CompararPage() {
               }}
             >
               <KickerRadarChart
-                data1={athlete1?.radar}
-                data2={athlete2?.radar}
+                data1={athlete1?.radar ?? { velocidade: 0, resistencia: 0, explosividade: 0, carga: 0, recuperacao: 0, tecnica: 0 }}
+                data2={athlete2?.radar ?? { velocidade: 0, resistencia: 0, explosividade: 0, carga: 0, recuperacao: 0, tecnica: 0 }}
                 label1={athlete1 ? `ID ${athlete1.id.slice(-2)}` : undefined}
                 label2={athlete2 ? `ID ${athlete2.id.slice(-2)}` : undefined}
               />

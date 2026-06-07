@@ -66,5 +66,37 @@ export const apiService = {
         method: "POST", // The backend route is POST
         headers: { "Authorization": `Bearer ${token}` }
       }),
-  }
+  },
+
+  // Alert specific methods
+  alerts: {
+    getAll: (token: string, filters?: { status?: string; severity?: string; athleteId?: string }) => {
+      const params = new URLSearchParams();
+      if (filters?.status) params.append("status", filters.status);
+      if (filters?.severity) params.append("severity", filters.severity);
+      if (filters?.athleteId) params.append("athleteId", filters.athleteId);
+      const qs = params.toString();
+      return apiService.get<Record<string, unknown>[]>(`/alerts${qs ? `?${qs}` : ""}`, token);
+    },
+    getCount: (token: string) =>
+      apiService.get<{ count: number }>("/alerts/count", token),
+    getByAthlete: (id: string, token: string) =>
+      apiService.get<Record<string, unknown>[]>(`/alerts/athlete/${id}`, token),
+    create: (data: Record<string, unknown>, token: string) =>
+      request<Record<string, unknown>>("/alerts", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Authorization": `Bearer ${token}` },
+      }),
+    resolve: (id: string, token: string) =>
+      request<Record<string, unknown>>(`/alerts/${id}/resolve`, {
+        method: "PATCH",
+        headers: { "Authorization": `Bearer ${token}` },
+      }),
+    delete: (id: string, token: string) =>
+      request<{ message: string }>(`/alerts/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` },
+      }),
+  },
 };

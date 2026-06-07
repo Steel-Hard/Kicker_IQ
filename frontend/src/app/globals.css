@@ -449,3 +449,489 @@ body {
     width: 240px;
   }
 }
+
+/* ═══════════════════════════════════════════
+   Alert Card
+   ═══════════════════════════════════════════ */
+
+.alert-card {
+  display: flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 150ms var(--ease-out), transform 150ms var(--ease-out);
+  animation: slideUp 0.32s var(--ease-out) both;
+}
+.alert-card:hover {
+  border-color: var(--border-emphasis);
+}
+.alert-card--resolved {
+  opacity: 0.6;
+}
+.alert-card--resolved:hover {
+  opacity: 0.85;
+}
+
+.alert-card__severity-bar {
+  width: 3px;
+  flex-shrink: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+.alert-card__content {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.alert-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.alert-card__athlete-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alert-card__severity-badge {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 20px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.alert-card__time {
+  font-size: 10px;
+  color: var(--text-subtle);
+  white-space: nowrap;
+}
+
+.alert-card__title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.alert-card__description {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.alert-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+.alert-card__type-badge {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-subtle);
+  background: var(--surface-4);
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.2px;
+}
+
+.alert-card__resolved-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--success-text, #22c55e);
+  background: var(--success-bg, rgba(34,197,94,0.1));
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.alert-card__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 10px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 120ms var(--ease-out), opacity 120ms;
+}
+.alert-card__btn--resolve {
+  background: var(--success-bg, rgba(34,197,94,0.1));
+  color: var(--success-text, #22c55e);
+}
+.alert-card__btn--resolve:hover {
+  background: var(--success, #1d9e75);
+  color: #fff;
+}
+.alert-card__btn--delete {
+  background: transparent;
+  color: var(--text-subtle);
+  padding: 4px 6px;
+}
+.alert-card__btn--delete:hover {
+  background: var(--danger-bg, rgba(239,68,68,0.1));
+  color: var(--danger);
+}
+
+/* ═══════════════════════════════════════════
+   Alert Filter Chips
+   ═══════════════════════════════════════════ */
+
+.alert-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-3);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms, color 120ms;
+  user-select: none;
+}
+.alert-filter-chip:hover {
+  border-color: var(--border-emphasis);
+}
+.alert-filter-chip--active {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+.alert-filter-chip__count {
+  font-size: 9px;
+  font-weight: 700;
+  background: var(--danger);
+  color: #fff;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.alert-severity-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 20px;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-subtle);
+  font-size: 10px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms;
+  user-select: none;
+}
+.alert-severity-chip:hover {
+  border-color: var(--border-emphasis);
+}
+.alert-severity-chip--active {
+  background: var(--surface-4);
+  border-color: var(--chip-color, var(--border-emphasis));
+  color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════
+   Alert Empty State
+   ═══════════════════════════════════════════ */
+
+.alert-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════════
+   Alert Modal
+   ═══════════════════════════════════════════ */
+
+.alert-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.2s var(--ease-out) both;
+}
+
+.alert-modal {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90dvh;
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 16px 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.28s var(--ease-out) both;
+}
+
+@media (min-width: 640px) {
+  .alert-modal-overlay {
+    align-items: center;
+  }
+  .alert-modal {
+    border-radius: 16px;
+    max-height: 80dvh;
+  }
+}
+
+.alert-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.alert-modal__close {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-subtle);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 120ms;
+}
+.alert-modal__close:hover {
+  background: var(--surface-4);
+  color: var(--text-primary);
+}
+
+.alert-modal__body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.alert-modal__footer {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-default);
+}
+
+.alert-modal__btn {
+  flex: 1;
+  height: 38px;
+  border-radius: 8px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 120ms, opacity 120ms;
+}
+.alert-modal__btn--cancel {
+  background: var(--surface-4);
+  color: var(--text-secondary);
+}
+.alert-modal__btn--cancel:hover {
+  background: var(--surface-5);
+}
+.alert-modal__btn--submit {
+  background: var(--primary);
+  color: #000;
+}
+.alert-modal__btn--submit:hover {
+  background: var(--primary-hover);
+}
+.alert-modal__btn--submit:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════
+   Alert Form Elements
+   ═══════════════════════════════════════════ */
+
+.alert-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.alert-form-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-subtle);
+  letter-spacing: 0.2px;
+}
+
+.alert-form-select-wrapper {
+  position: relative;
+}
+
+.alert-form-select {
+  width: 100%;
+  height: 36px;
+  padding: 0 28px 0 10px;
+  background: var(--surface-4);
+  border: 1px solid var(--border-emphasis);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 120ms;
+}
+.alert-form-select:focus {
+  border-color: var(--primary-strong);
+}
+.alert-form-select option {
+  background: var(--surface-3);
+  color: var(--text-primary);
+}
+
+.alert-form-select-icon {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-subtle);
+  pointer-events: none;
+}
+
+.alert-form-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  background: var(--surface-4);
+  border: 1px solid var(--border-emphasis);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 120ms;
+}
+.alert-form-input::placeholder {
+  color: var(--text-muted);
+}
+.alert-form-input:focus {
+  border-color: var(--primary-strong);
+}
+
+.alert-form-textarea {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--surface-4);
+  border: 1px solid var(--border-emphasis);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  outline: none;
+  resize: vertical;
+  min-height: 60px;
+  transition: border-color 120ms;
+}
+.alert-form-textarea::placeholder {
+  color: var(--text-muted);
+}
+.alert-form-textarea:focus {
+  border-color: var(--primary-strong);
+}
+
+.alert-severity-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border-emphasis);
+  background: var(--surface-4);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms;
+}
+.alert-severity-option:hover {
+  border-color: var(--sev-color, var(--border-muted));
+}
+.alert-severity-option--active {
+  border-color: var(--sev-color, var(--primary));
+  background: var(--surface-5);
+  color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════
+   Nav Badge (alert count on nav item)
+   ═══════════════════════════════════════════ */
+
+.app-nav-badge {
+  position: relative;
+}
+.app-nav-badge__count {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 10px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border: 1.5px solid var(--surface-1);
+}
+

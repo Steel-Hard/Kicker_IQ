@@ -83,7 +83,7 @@ export default function ImportarPage() {
   
   const [lookupId, setLookupId] = useState('')
   const [lookupDate, setLookupDate] = useState('')
-  const [lookupResult, setLookupResult] = useState<unknown>(null)
+  const [lookupResult, setLookupResult] = useState<Record<string, unknown> | Record<string, unknown>[] | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 

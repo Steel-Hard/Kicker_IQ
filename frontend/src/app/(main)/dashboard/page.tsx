@@ -10,12 +10,14 @@ import { formatNumber, formatDelta } from '@/lib/utils'
 import { useAthletes } from '@/context/AthleteContext'
 import { useAuth } from '@/context/AuthContext'
 import { Avatar } from '@/components/kicker/avatar'
+import { useAlerts } from '@/context/AlertContext'
 
 export default function DashboardPage() {
   const { loading: authLoading } = useAuth()
   const { athletes, loading: athletesLoading, error } = useAthletes()
+  const { alerts, activeCount } = useAlerts()
 
-  const alertAthletes = athletes.filter((a) => a.hasAlert)
+  const activeAlerts = alerts.filter(a => a.status === 'active')
   
   const stats = athletes.length > 0 ? {
     avgSpeed: athletes.reduce((acc, a) => acc + a.speed, 0) / athletes.length,
@@ -75,7 +77,8 @@ export default function DashboardPage() {
             Sessão Ativa: {new Date().toLocaleDateString()}
           </div>
         </div>
-        <button
+        <Link
+          href="/alertas"
           style={{
             width: 30,
             height: 30,
@@ -87,10 +90,11 @@ export default function DashboardPage() {
             justifyContent: 'center',
             cursor: 'pointer',
             position: 'relative',
+            textDecoration: 'none',
           }}
         >
           <Bell size={14} color="var(--text-secondary)" />
-          {alertAthletes.length > 0 && (
+          {activeCount > 0 && (
             <span
               style={{
                 position: 'absolute',
@@ -104,7 +108,7 @@ export default function DashboardPage() {
               }}
             />
           )}
-        </button>
+        </Link>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: '16px 14px', paddingBottom: 24 }}>
@@ -160,15 +164,21 @@ export default function DashboardPage() {
         </div>
 
         {/* Alerts */}
-        {alertAthletes.length > 0 && (
+        {activeAlerts.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div className="k-section-label">ALERTAS ATIVOS</div>
-            {alertAthletes.map((a) => (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div className="k-section-label">ALERTAS ATIVOS</div>
+              <Link href="/alertas" style={{ fontSize: 10, color: 'var(--primary-strong)', textDecoration: 'none', fontWeight: 500 }}>
+                Ver todos →
+              </Link>
+            </div>
+            {activeAlerts.slice(0, 3).map((a) => (
               <AlertBanner
-                key={a.id}
-                title={`ID: ${a.id}${a.alertTitle ? ` — ${a.alertTitle}` : ''}`}
-                description={a.alertDesc || 'O atleta requer atenção especial.'}
+                key={a._id}
+                title={`${a.athleteName} — ${a.title}`}
+                description={a.description}
                 action="Ver ↗"
+                onAction={() => window.location.href = '/alertas'}
               />
             ))}
           </div>
