@@ -65,20 +65,21 @@
 | 3 | 25/05/2026 | 11/06/2026 | 🔴 A Fazer | [Ver Gráfico](assets/burndown_sp3.png) |  [Ver](docs/sprint3.md) |
 
 ---
+## Definition of Done
+Quando os User Stories estiverem completos e entregues, o projeto estará pronto.
 
 ## 📋 User Stories
 
-| ID    | User Story | Critérios de Aceitação |
-|-------|------------|----------------------|
-| US01  | Como usuário, quero importar dados históricos de partidas para o sistema, para iniciar as análises de desempenho. | a) O sistema deve permitir o upload de arquivos contendo indicadores como carga de trabalho, distância de sprint e velocidade máxima.<br>b) Os dados importados devem ser validados para garantir a integridade e evitar inconsistências. |
-| US02  | Como usuário, quero importar novos dados após cada partida, para manter o sistema atualizado. | a) Novos dados devem ser anexados à base histórica sem sobrescrever informações anteriores de forma indevida. |
-| US03  | Como técnico, quero que o sistema identifique automaticamente perfis de jogadores, para entender suas características de jogo. | a) O sistema deve classificar automaticamente os atletas em categorias como "explosivo", "alta resistência", "baixa intensidade" ou "alta carga de impacto".<br>b) A classificação deve ser baseada em métodos de inteligência artificial.<br>c) O processamento deve ser realizado em serviços de nuvem |
-| US04  | Como técnico, quero comparar jogadores com base em seus indicadores e perfis, para ajustar treinos e identificar substitutos. | a) Deve ser possível selecionar dois ou mais atletas para comparação lado a lado de seus perfis e indicadores.<br>b) O sistema deve sugerir substitutos com perfis semelhantes aos de um jogador selecionado. |
-| US05  | O sistema deve comparar os indicadores da partida atual com a média histórica do próprio jogador para identificar desvios. | a) Deve haver login com senha para o usuário e para os cuidadores.<br>b) A detecção de quedas deve ser feita de forma automatizada pelo sistema. |
-| US06  | Como técnico, quero receber alertas quando houver queda de desempenho, para agir imediatamente. | a) Ao detectar uma anomalia relevante, um alerta visual ou notificação deve ser disparado para a comissão técnica. |
-| US07  | Como técnico, quero visualizar dashboards com indicadores de desempenho, para interpretar os dados facilmente. | a) Os resultados das análises devem ser apresentados de forma clara, permitindo interpretação objetiva.<br>b) As visualizações devem ser adequadas para cada tipo de indicador de desempenho.<br>c) A interface deve ser intuitiva e centrada na experiência do usuário. |
-| US08  | Como técnico, quero acessar o sistema pelo celular, para acompanhar os dados em qualquer lugar. | a) O sistema deve possuir interface responsiva que se adapte a diferentes tamanhos de tela de dispositivos móveis.<br>b) Todas as análises disponíveis no desktop devem estar acessíveis via mobile.<br>c) O acesso deve ser protegido por mecanismos de segurança e criptografia de dados. |
-
+| Pontos | ID    | User Story | Critérios de Aceitação |
+|--------|-------|------------|------------------------|
+| 13     | US01  | Como usuário, quero importar dados históricos de partidas para o sistema, para iniciar as análises de desempenho. | a) O sistema deve permitir o upload de arquivos contendo indicadores como carga de trabalho, distância de sprint e velocidade máxima.<br>b) Os dados importados devem ser validados para garantir a integridade e evitar inconsistências. |
+| 8      | US02  | Como usuário, quero importar novos dados após cada partida, para manter o sistema atualizado. | a) Novos dados devem ser anexados à base histórica sem sobrescrever informações anteriores de forma indevida. |
+| 13     | US03  | Como técnico, quero que o sistema identifique automaticamente perfis de jogadores, para entender suas características de jogo. | a) O sistema deve classificar automaticamente os atletas em categorias como "explosivo", "alta resistência", "baixa intensidade" ou "alta carga de impacto".<br>b) A classificação deve ser baseada em métodos de inteligência artificial.<br>c) O processamento deve ser realizado em serviços de nuvem |
+| 21     | US04  | Como técnico, quero comparar jogadores com base em seus indicadores e perfis, para ajustar treinos e identificar substitutos. | a) Deve ser possível selecionar dois ou mais atletas para comparação lado a lado de seus perfis e indicadores.<br>b) O sistema deve sugerir substitutos com perfis semelhantes aos de um jogador selecionado. |
+| 21     | US05  | O sistema deve comparar os indicadores da partida atual com a média histórica do próprio jogador para identificar desvios. | a) Deve haver login com senha para o usuário e para os cuidadores.<br>b) A detecção de quedas deve ser feita de forma automatizada pelo sistema. |
+| 5      | US06  | Como técnico, quero receber alertas quando houver queda de desempenho, para agir imediatamente. | a) Ao detectar uma anomalia relevante, um alerta visual ou notificação deve ser disparado para a comissão técnica. |
+| 13     | US07  | Como técnico, quero visualizar dashboards com indicadores de desempenho, para interpretar os dados facilmente. | a) Os resultados das análises devem ser apresentados de forma clara, permitindo interpretação objetiva.<br>b) As visualizações devem ser adequadas para cada tipo de indicador de desempenho.<br>c) A interface deve ser intuitiva e centrada na experiência do usuário. |
+| 13     | US08  | Como técnico, quero acessar o sistema pelo celular, para acompanhar os dados em qualquer lugar. | a) O sistema deve possuir interface responsiva que se adapte a diferentes tamanhos de tela de dispositivos móveis.<br>b) Todas as análises disponíveis no desktop devem estar acessíveis via mobile.<br>c) O acesso deve ser protegido por mecanismos de segurança e criptografia de dados. |
 ## 📋 Product Backlog
 | Número | Recurso Funcional           | Síntese do Requisito                                         | Status          |
 |:------:|-----------------------------|:------------------------------------------------------------:|:---------------:|
