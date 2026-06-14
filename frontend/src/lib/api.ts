@@ -1,3 +1,5 @@
+import type { Athlete } from "./mock-data";
+
 /**
  * API Service layer to decouple components from direct fetch calls.
  * Uses NEXT_PUBLIC_API_URL environment variable.
@@ -68,6 +70,34 @@ export const apiService = {
       }),
   },
 
+  // Dashboard specific methods
+  dashboard: {
+    getSummary: (token: string) => apiService.get<{
+      squadRadarAvg: Array<{ subject: string; A: number }>;
+      riskData: Array<{ name: string; load: number; pse: number; z: number }>;
+      loadEvolution: Array<{ jornada: string; carga: number }>;
+      topPerformers: Array<Athlete & { performanceScore: number }>;
+      teamStats: {
+        avgSpeed: number;
+        avgSprintDist: number;
+        avgLoad: number;
+        avgPse: number;
+        speedDelta: number;
+        sprintDelta: number;
+        loadDelta: number;
+        pseDelta: number;
+        alertCount: number;
+        lastMatch: {
+          date: string;
+          jornada: string;
+          result: string;
+          score: string;
+          opponent: string;
+        };
+      };
+    }>("/dashboard/summary", token),
+  },
+
   // Alert specific methods
   alerts: {
     getAll: (token: string, filters?: { status?: string; severity?: string; athleteId?: string }) => {
@@ -100,3 +130,4 @@ export const apiService = {
       }),
   },
 };
+

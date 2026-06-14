@@ -1,11 +1,19 @@
 export function mapToEnrichedAthlete(row: any) {
-  const speed = parseFloat(row['Top Speed']) || 0;
-  const sprintDistance = parseFloat(row['Sprint Distance']) || 0;
-  const distance = parseFloat(row['Distance (m)']) || 0;
-  const duration = parseFloat(row['Duration (mins)']) || 1;
+  const get = (keys: string[]) => {
+    for (const k of keys) {
+      if (row[k] !== undefined && row[k] !== null) return row[k];
+    }
+    return null;
+  };
+
+  const speed = parseFloat(get(['Top Speed (kph)', 'Top Speed', 'top_speed']) as string) || 0;
+  const sprintDistance = parseFloat(get(['Sprint Distance (m)', 'Sprint Distance', 'sprint_distance']) as string) || 0;
+  const distance = parseFloat(get(['Distance (m)', 'distance']) as string) || 0;
+  const duration = parseFloat(get(['Duration (mins)', 'duration']) as string) || 1;
+  const avgSpeed = parseFloat(get(['Avg Speed (kph)', 'avg_speed']) as string) || 5;
   
   // Estimate values for visual richness based on physical data
-  const weeklyLoad = (duration * (parseFloat(row['Avg Speed (kph)']) || 5)) * 1.5; 
+  const weeklyLoad = (duration * avgSpeed) * 1.5; 
   const pse = Math.min(10, Math.max(1, Math.round(weeklyLoad / 100)));
   
   let profile = 'baixa';
@@ -21,17 +29,19 @@ export function mapToEnrichedAthlete(row: any) {
     profileLabel = 'Resistente';
   }
 
-  const nameStr = row['Name'] || '';
+  const nameStr = row['Name'] || row['athlete_name'] || row['Full Name'] || '';
   const parts = nameStr.split(' ');
   const initials = parts.length > 1 ? `${parts[0][0]}${parts[parts.length-1][0]}` : (nameStr.substring(0,2).toUpperCase() || 'NA');
 
+  const athleteId = row['Athlete ID']?.toString() || row['id']?.toString() || '0';
+
   return {
-    id: row['Athlete ID']?.toString(),
+    id: athleteId,
     name: nameStr,
     initials,
-    number: parseInt(row['Athlete ID']) || 0,
-    position: row['Position'] || 'ATA',
-    group: row['Groups'] || 'Principal',
+    number: parseInt(athleteId) || 0,
+    position: row['Position'] || row['athlete_position'] || 'ATA',
+    group: row['Groups'] || row['athlete_group'] || 'Principal',
     age: 24, // default if missing
     speed,
     sprintDistance,

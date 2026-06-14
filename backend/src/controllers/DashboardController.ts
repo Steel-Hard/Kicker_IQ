@@ -10,7 +10,9 @@ export class DashboardController {
       return res.json(data);
     } catch (error) {
       console.error('Error fetching dashboard summary:', error);
-      return res.status(500).json({ error: 'Erro ao buscar resumo do dashboard' });
+      return res
+        .status(500)
+        .json({ error: 'Erro ao buscar resumo do dashboard' });
     }
   }
 }

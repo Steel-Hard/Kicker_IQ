@@ -1,5 +1,14 @@
 'use client'
 
+import {
+  ResponsiveContainer,
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  Tooltip,
+} from 'recharts'
+
 type RadarData = {
   velocidade: number
   resistencia: number
@@ -17,137 +26,140 @@ interface RadarChartProps {
 }
 
 const AXES = [
-  { key: 'velocidade',   label: 'Vel.' },
-  { key: 'explosividade',label: 'Explos.' },
+  { key: 'velocidade',   label: 'Velocidade' },
+  { key: 'explosividade',label: 'Explosão' },
   { key: 'carga',        label: 'Carga' },
   { key: 'tecnica',      label: 'Técnica' },
-  { key: 'recuperacao',  label: 'Recup.' },
-  { key: 'resistencia',  label: 'Resist.' },
+  { key: 'recuperacao',  label: 'Recuperação' },
+  { key: 'resistencia',  label: 'Resistência' },
 ] as const
 
-const CX = 130
-const CY = 120
-const R  = 80
-const N  = AXES.length
-
-function polarToCartesian(cx: number, cy: number, r: number, angle: number) {
-  const rad = ((angle - 90) * Math.PI) / 180
-  return {
-    x: cx + r * Math.cos(rad),
-    y: cy + r * Math.sin(rad),
-  }
+interface TooltipPayload {
+  name: string;
+  value: number;
+  color?: string;
+  dataKey?: string | number;
+  payload: {
+    subject: string;
+    A: number;
+    B: number;
+  };
 }
 
-function buildPolygon(data: RadarData, r: number): string {
-  return AXES.map((axis, i) => {
-    const angle = (360 / N) * i
-    const val = (data[axis.key] / 100) * r
-    const pt = polarToCartesian(CX, CY, val, angle)
-    return `${pt.x},${pt.y}`
-  }).join(' ')
+interface TooltipProps {
+  active?: boolean;
+  payload?: TooltipPayload[];
 }
 
-export function KickerRadarChart({ data1, data2, label1 = 'A', label2 = 'B' }: RadarChartProps) {
-  const rings = [20, 40, 60, 80, 100]
+const CustomTooltip = ({ active, payload }: TooltipProps) => {
+  if (!active || !payload?.length) return null
 
   return (
-    <div>
-      <svg viewBox="0 0 260 240" style={{ width: '100%', maxWidth: 280 }}>
-        {rings.map((pct) => {
-          const r = (pct / 100) * R
-          const points = Array.from({ length: N }, (_, i) => {
-            const pt = polarToCartesian(CX, CY, r, (360 / N) * i)
-            return `${pt.x},${pt.y}`
-          }).join(' ')
-          return (
-            <polygon
-              key={pct}
-              points={points}
-              fill="none"
-              stroke={pct === 100 ? 'var(--border-strong)' : 'var(--chart-grid)'}
-              strokeWidth="1"
-            />
-          )
-        })}
+    <div style={{ 
+      background: 'var(--surface-3)', 
+      border: '1px solid var(--border-emphasis)', 
+      borderRadius: 12, 
+      padding: '10px 14px',
+      boxShadow: 'var(--shadow-3)',
+      fontSize: 11,
+      zIndex: 100
+    }}>
+      <p style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6, borderBottom: '1px solid var(--border-subtle)', paddingBottom: 4 }}>
+        {payload[0].payload.subject}
+      </p>
+      {payload.map((entry, i) => (
+        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: i === 0 && payload.length > 1 ? 4 : 0 }}>
+          <span style={{ fontWeight: 500, color: 'var(--text-secondary)' }}>{entry.name}:</span>
+          <span style={{ fontWeight: 700, color: entry.color }}>{Math.round(entry.value)}%</span>
+        </div>
+      ))}
+    </div>
+  )
+}
 
-        {AXES.map((axis, i) => {
-          const angle = (360 / N) * i
-          const outer = polarToCartesian(CX, CY, R, angle)
-          return (
-            <line
-              key={axis.key}
-              x1={CX} y1={CY}
-              x2={outer.x} y2={outer.y}
-              stroke="var(--chart-grid)"
-              strokeWidth="1"
-            />
-          )
-        })}
+export function KickerRadarChart({ data1, data2, label1 = 'Atleta A', label2 = 'Atleta B' }: RadarChartProps) {
+  // Map data for Recharts format
+  const chartData = AXES.map(axis => ({
+    subject: axis.label,
+    A: data1 ? (data1[axis.key as keyof RadarData] || 0) : 0,
+    B: data2 ? (data2[axis.key as keyof RadarData] || 0) : 0,
+  }))
 
-        {data1 && (
-          <polygon
-            points={buildPolygon(data1, R)}
-            fill={data2 ? 'var(--primary)' : 'var(--chart-baseline-soft)'}
-            fillOpacity={data2 ? 0.18 : 0.2}
-            stroke={data2 ? 'var(--primary)' : 'var(--chart-baseline-soft)'}
-            strokeWidth="1.5"
+  // Colors based on Kicker design system
+  const color1 = data2 ? "var(--primary-strong)" : "var(--primary)";
+  const color2 = "var(--success-soft)";
+
+  return (
+    <div style={{ width: '100%', height: 320, display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <RadarChart data={chartData} margin={{ top: 20, right: 40, bottom: 20, left: 40 }}>
+          <PolarGrid stroke="var(--border-emphasis)" />
+          <PolarAngleAxis 
+            dataKey="subject" 
+            tick={{ fill: 'var(--text-subtle)', fontSize: 10, fontWeight: 500 }}
           />
-        )}
-
-        {data2 && (
-          <polygon
-            points={buildPolygon(data2, R)}
-            fill="var(--chart-baseline-soft)"
-            fillOpacity={0.14}
-            stroke="var(--chart-baseline-soft)"
-            strokeWidth="1.5"
+          
+          <Radar
+            name={label1}
+            dataKey="A"
+            stroke={color1}
+            fill={color1}
+            fillOpacity={0.35}
+            strokeWidth={2}
+            isAnimationActive={true}
+            animationDuration={800}
           />
-        )}
 
-        {AXES.map((axis, i) => {
-          const angle = (360 / N) * i
-          const pt = polarToCartesian(CX, CY, R + 18, angle)
-          return (
-            <text
-              key={axis.key}
-              x={pt.x}
-              y={pt.y}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fontSize="10"
-              fill="var(--text-muted)"
-              fontFamily="var(--font-sans)"
-              fontWeight="500"
-            >
-              {axis.label}
-            </text>
-          )
-        })}
-      </svg>
+          {data2 && (
+            <Radar
+              name={label2}
+              dataKey="B"
+              stroke={color2}
+              fill={color2}
+              fillOpacity={0.2}
+              strokeWidth={2}
+              isAnimationActive={true}
+              animationDuration={800}
+            />
+          )}
 
-      <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 8 }}>
+          <Tooltip content={<CustomTooltip />} />
+        </RadarChart>
+      </ResponsiveContainer>
+
+      {/* Manual Legend to ensure it's always visible and stylized */}
+      <div style={{ 
+        display: 'flex', 
+        gap: 20, 
+        justifyContent: 'center', 
+        marginTop: 0,
+        padding: '8px 16px',
+        background: 'var(--surface-3)',
+        borderRadius: 20,
+        border: '1px solid var(--border-subtle)'
+      }}>
         {data1 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{
-              width: 20,
-              height: 2,
-              background: data2 ? 'var(--primary)' : 'var(--chart-baseline-soft)',
-              borderRadius: 2,
-              display: 'block',
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              background: color1,
+              boxShadow: data2 ? '0 0 8px var(--primary)' : 'none'
             }} />
-            <span style={{ fontSize: 10, color: 'var(--text-subtle)', fontWeight: 500 }}>{label1}</span>
+            <span style={{ fontSize: 10, color: 'var(--text-primary)', fontWeight: 600 }}>{label1}</span>
           </div>
         )}
         {data2 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{
-              width: 20,
-              height: 2,
-              background: 'var(--chart-baseline-soft)',
-              borderRadius: 2,
-              display: 'block',
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              background: color2,
+              boxShadow: '0 0 8px var(--success-soft)'
             }} />
-            <span style={{ fontSize: 10, color: 'var(--text-subtle)', fontWeight: 500 }}>{label2}</span>
+            <span style={{ fontSize: 10, color: 'var(--text-primary)', fontWeight: 600 }}>{label2}</span>
           </div>
         )}
       </div>
