@@ -10,12 +10,13 @@ import { formatNumber, formatDelta } from '@/lib/utils'
 import { useAthletes } from '@/context/AthleteContext'
 import { useAuth } from '@/context/AuthContext'
 import { Avatar } from '@/components/kicker/avatar'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import { useAlerts } from '@/context/AlertContext'
 
 export default function DashboardPage() {
   const { loading: authLoading } = useAuth()
   const { athletes, loading: athletesLoading, error } = useAthletes()
-  const { alerts, activeCount } = useAlerts()
+  const { alerts } = useAlerts()
 
   const activeAlerts = alerts.filter(a => a.status === 'active')
   
@@ -71,44 +72,32 @@ export default function DashboardPage() {
       >
         <div>
           <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.2 }}>
-            Kicker IQ Dashboard
+            Kicker
           </div>
           <div style={{ fontSize: 10, color: 'var(--text-subtle)', lineHeight: 1.3 }}>
             Sessão Ativa: {new Date().toLocaleDateString()}
           </div>
         </div>
-        <Link
-          href="/alertas"
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: 10,
-            border: '1px solid var(--border-emphasis)',
-            background: 'transparent',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            position: 'relative',
-            textDecoration: 'none',
-          }}
-        >
-          <Bell size={14} color="var(--text-secondary)" />
-          {activeCount > 0 && (
-            <span
-              style={{
-                position: 'absolute',
-                top: -3,
-                right: -3,
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                background: 'var(--danger)',
-                border: '1.5px solid var(--surface-1)',
-              }}
-            />
-          )}
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <ThemeToggle />
+          <button
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: 10,
+              border: '1px solid var(--border-emphasis)',
+              background: 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              position: 'relative',
+            }}
+          >
+            <Bell size={14} color="var(--text-secondary)" />
+      
+          </button>
+        </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: '16px 14px', paddingBottom: 24 }}>

@@ -56,7 +56,7 @@ export const apiService = {
   // Model specific methods
   model: {
     predict: (metrics: Record<string, unknown>, token: string) => 
-      request<{ clusterName: string; [key: string]: unknown }>("/model/predict", { 
+      request<{ clusterName: string; confidence: string; allScores: Array<{ cluster: string; score: string }>; [key: string]: unknown }>("/model/predict", { 
         method: "POST", 
         body: JSON.stringify(metrics),
         headers: { "Authorization": `Bearer ${token}` }

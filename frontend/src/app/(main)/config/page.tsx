@@ -2,28 +2,33 @@
 
 import { TopBar } from '@/components/kicker/top-bar'
 import { Avatar } from '@/components/kicker/avatar'
-import { LogOut, Bell, Shield, HelpCircle, ChevronRight, Moon } from 'lucide-react'
+import { LogOut, Bell, Shield, HelpCircle, ChevronRight, Moon, Sun, type LucideIcon } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
-
-const menuItems = [
-  {
-    group: 'PERFIL',
-    items: [
-      { icon: Bell,    label: 'Notificações',    desc: '2 alertas ativos' },
-      { icon: Moon,    label: 'Aparência',        desc: 'Dark (padrão)' },
-    ],
-  },
-  {
-    group: 'SISTEMA',
-    items: [
-      { icon: Shield,     label: 'Segurança',    desc: 'Alterar senha' },
-      { icon: HelpCircle, label: 'Ajuda',        desc: 'Central de suporte' },
-    ],
-  },
-]
+import { useTheme } from '@/components/ThemeProvider'
 
 export default function ConfigPage() {
   const { user, logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
+
+  const menuItems: {
+    group: string
+    items: { icon: LucideIcon; label: string; desc: string; onClick?: () => void }[]
+  }[] = [
+    {
+      group: 'PERFIL',
+      items: [
+        { icon: Bell,                          label: 'Notificações', desc: '2 alertas ativos' },
+        { icon: theme === 'dark' ? Moon : Sun, label: 'Aparência',    desc: theme === 'dark' ? 'Escuro' : 'Claro', onClick: toggleTheme },
+      ],
+    },
+    {
+      group: 'SISTEMA',
+      items: [
+        { icon: Shield,     label: 'Segurança', desc: 'Alterar senha' },
+        { icon: HelpCircle, label: 'Ajuda',     desc: 'Central de suporte' },
+      ],
+    },
+  ]
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', width: '100%', background: 'var(--surface-1)' }}>
@@ -71,9 +76,10 @@ export default function ConfigPage() {
                 overflow: 'hidden',
               }}
             >
-              {group.items.map(({ icon: Icon, label, desc }, i, arr) => (
+              {group.items.map(({ icon: Icon, label, desc, onClick }, i, arr) => (
                 <button
                   key={label}
+                  onClick={onClick}
                   style={{
                     width: '100%',
                     display: 'flex',
@@ -127,7 +133,7 @@ export default function ConfigPage() {
         <button
           onClick={logout}
           className="k-btn-outline"
-          style={{ width: '100%', color: 'var(--danger)', borderColor: 'rgba(226,75,74,0.3)', cursor: 'pointer' }}
+          style={{ width: '100%', color: 'var(--danger)', borderColor: 'var(--danger)', cursor: 'pointer' }}
         >
           <LogOut size={14} />
           Sair da conta

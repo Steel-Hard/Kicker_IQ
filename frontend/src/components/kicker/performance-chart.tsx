@@ -77,7 +77,7 @@ export function PerformanceChart({ data, average }: PerformanceChartProps) {
             strokeWidth={1}
           />
         )}
-        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--surface-5)', fillOpacity: 0.4 }} />
         <Bar dataKey="dist" radius={[4, 4, 0, 0]}>
           {data.map((entry, i) => (
             <Cell

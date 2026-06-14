@@ -10,7 +10,7 @@ type RadarData = {
 }
 
 interface RadarChartProps {
-  data1: RadarData
+  data1?: RadarData
   data2?: RadarData
   label1?: string
   label2?: string
@@ -64,7 +64,7 @@ export function KickerRadarChart({ data1, data2, label1 = 'A', label2 = 'B' }: R
               key={pct}
               points={points}
               fill="none"
-              stroke={pct === 100 ? '#2a2a2a' : '#1a1a1a'}
+              stroke={pct === 100 ? 'var(--border-strong)' : 'var(--chart-grid)'}
               strokeWidth="1"
             />
           )
@@ -78,23 +78,27 @@ export function KickerRadarChart({ data1, data2, label1 = 'A', label2 = 'B' }: R
               key={axis.key}
               x1={CX} y1={CY}
               x2={outer.x} y2={outer.y}
-              stroke="#1f1f1f"
+              stroke="var(--chart-grid)"
               strokeWidth="1"
             />
           )
         })}
 
-        <polygon
-          points={buildPolygon(data1, R)}
-          fill={data2 ? 'rgba(218,165,32,0.18)' : 'rgba(93,202,165,0.20)'}
-          stroke={data2 ? '#DAA520' : 'var(--chart-baseline-soft)'}
-          strokeWidth="1.5"
-        />
+        {data1 && (
+          <polygon
+            points={buildPolygon(data1, R)}
+            fill={data2 ? 'var(--primary)' : 'var(--chart-baseline-soft)'}
+            fillOpacity={data2 ? 0.18 : 0.2}
+            stroke={data2 ? 'var(--primary)' : 'var(--chart-baseline-soft)'}
+            strokeWidth="1.5"
+          />
+        )}
 
         {data2 && (
           <polygon
             points={buildPolygon(data2, R)}
-            fill="rgba(93,202,165,0.14)"
+            fill="var(--chart-baseline-soft)"
+            fillOpacity={0.14}
             stroke="var(--chart-baseline-soft)"
             strokeWidth="1.5"
           />
@@ -122,16 +126,18 @@ export function KickerRadarChart({ data1, data2, label1 = 'A', label2 = 'B' }: R
       </svg>
 
       <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          <span style={{
-            width: 20,
-            height: 2,
-            background: data2 ? '#DAA520' : 'var(--chart-baseline-soft)',
-            borderRadius: 2,
-            display: 'block',
-          }} />
-          <span style={{ fontSize: 10, color: 'var(--text-subtle)', fontWeight: 500 }}>{label1}</span>
-        </div>
+        {data1 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span style={{
+              width: 20,
+              height: 2,
+              background: data2 ? 'var(--primary)' : 'var(--chart-baseline-soft)',
+              borderRadius: 2,
+              display: 'block',
+            }} />
+            <span style={{ fontSize: 10, color: 'var(--text-subtle)', fontWeight: 500 }}>{label1}</span>
+          </div>
+        )}
         {data2 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{

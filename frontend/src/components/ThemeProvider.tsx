@@ -17,9 +17,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as Theme | null;
     const initialTheme = savedTheme || "dark";
-    
-    // Using requestAnimationFrame or setTimeout to move setState out of the synchronous effect body
-    // and avoid the cascading render warning.
+
     requestAnimationFrame(() => {
       setTheme(initialTheme);
       document.documentElement.classList.toggle("dark", initialTheme === "dark");
@@ -33,8 +31,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
-  // Return the provider wrapping children. We no longer hide children here
-  // to avoid context errors. Layout stability is handled by suppressHydrationWarning.
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}

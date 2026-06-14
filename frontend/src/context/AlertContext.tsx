@@ -203,12 +203,14 @@ export function AlertProvider({ children }: { children: React.ReactNode }) {
   }, [token]);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      refreshAlerts();
-    } else {
-      // Load mock data even without auth for development
-      setAlerts(mockAlerts);
-    }
+    requestAnimationFrame(() => {
+      if (isAuthenticated) {
+        refreshAlerts();
+      } else {
+        // Load mock data even without auth for development
+        setAlerts(mockAlerts);
+      }
+    });
   }, [isAuthenticated, refreshAlerts]);
 
   return (

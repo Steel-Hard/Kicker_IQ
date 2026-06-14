@@ -242,7 +242,7 @@ export default function ImportarPage() {
             </button>
           </div>
           
-          {lookupResult && (
+          {lookupResult != null && (
             <div style={{ marginTop: 8, fontSize: 12, color: 'var(--success-text)', background: 'var(--success-bg)', padding: 12, borderRadius: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div style={{ fontWeight: 500 }}>
                 {Array.isArray(lookupResult) ? `${lookupResult.length} registros encontrados.` : 'Atleta localizado com sucesso.'}
