@@ -178,8 +178,44 @@
 }
 
 /* =============================================================
+   Light theme overrides
+   Dark is the default (:root). Light applies when `.dark` is
+   absent (toggle removes it). Only surfaces / text / borders /
+   chart neutrals flip — brand gold and status hues stay constant.
+   ============================================================= */
+html:not(.dark) {
+  --surface-0:        #FFFFFF;
+  --surface-1:        #F7F8FA;
+  --surface-2:        #FFFFFF;
+  --surface-3:        #F0F2F5;
+  --surface-4:        #E9ECF1;
+  --surface-5:        #DFE3EA;
+
+  --border-subtle:    #ECECEC;
+  --border-default:   #E2E2E2;
+  --border-strong:    #D5D5D5;
+  --border-emphasis:  #C4C4C4;
+  --border-muted:     #B0B0B0;
+
+  --text-primary:     #0A0A0A;
+  --text-high:        #141414;
+  --text-secondary:   #3A3A3A;
+  --text-muted:       #6B6B6B;
+  --text-subtle:      #7A7A7A;
+
+  --chart-grid:       #E2E2E2;
+  --chart-axis:       #6B6B6B;
+
+  /* High-contrast selected chip ("Todos") inverts per theme */
+  --neutral-pill-bg:  #0A0A0A;
+  --neutral-pill-text:#FFFFFF;
+}
+
+/* =============================================================
    Base reset — apply tokens to common elements
    ============================================================= */
+
+@layer base {
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -234,6 +270,8 @@ a:hover { color: var(--primary-strong-hover); }
 ::-webkit-scrollbar       { width: 4px; height: 4px; }
 ::-webkit-scrollbar-thumb { background-color: var(--border-strong); border-radius: 4px; }
 ::-webkit-scrollbar-track { background-color: var(--surface-0); }
+
+}
 
 /* =============================================================
    Utility classes — common patterns from the Kicker mocks
@@ -319,7 +357,6 @@ a:hover { color: var(--primary-strong-hover); }
 .k-pill--resist    { background: var(--success-bg);    color: var(--success-text); }
 .k-pill--baixa     { background: var(--avatar-baixa-bg); color: var(--avatar-baixa-text); }
 .k-pill--alert     { background: var(--danger-bg);     color: var(--danger-text); }
-.k-pill--neutral   { background: var(--neutral-pill-bg); color: var(--neutral-pill-text); }
 
 /* Filter chip — used in horizontal filter rows (with leading dot) */
 .k-chip {
@@ -339,9 +376,10 @@ a:hover { color: var(--primary-strong-hover); }
   transition: background-color var(--duration-1) var(--ease-out);
 }
 .k-chip[aria-selected="true"],
-.k-chip--selected { background: #fff; color: #000; border-color: #fff; }
-.k-chip__dot {
-  width: 6px; height: 6px; border-radius: 50%; background: currentColor;
+.k-chip--selected {
+  background: var(--neutral-pill-bg);
+  color: var(--neutral-pill-text);
+  border-color: var(--neutral-pill-bg);
 }
 
 /* Status dot — colored 7px circle marker */
@@ -361,13 +399,13 @@ a:hover { color: var(--primary-strong-hover); }
   font-size: var(--fs-12);
   flex-shrink: 0;
 }
+.k-avatar--sm { width: var(--size-avatar-sm); height: var(--size-avatar-sm); font-size: var(--fs-10); }
 .k-avatar--md { width: var(--size-avatar-md); height: var(--size-avatar-md); }
 .k-avatar--lg { width: var(--size-avatar-lg); height: var(--size-avatar-lg); font-size: var(--fs-18); }
 .k-avatar--explosivo { background: var(--avatar-explosivo-bg); color: var(--avatar-explosivo-text); }
 .k-avatar--impacto   { background: var(--avatar-impacto-bg);   color: var(--avatar-impacto-text); }
 .k-avatar--resist    { background: var(--avatar-resist-bg);    color: var(--avatar-resist-text); }
 .k-avatar--baixa     { background: var(--avatar-baixa-bg);     color: var(--avatar-baixa-text); }
-.k-avatar--neutral   { background: var(--surface-3); color: var(--text-secondary); border: 1px solid var(--border-strong); }
 
 /* KPI card — small data cell with label + value + delta */
 .k-kpi {
@@ -409,25 +447,3 @@ a:hover { color: var(--primary-strong-hover); }
 }
 .k-field::placeholder { color: var(--text-muted); }
 .k-field:focus { border-color: var(--primary-strong); }
-
-/* Search box (mobile body style) */
-.k-search {
-  display: flex; align-items: center; gap: var(--space-2);
-  height: 36px;
-  padding: 0 var(--space-3);
-  background-color: var(--surface-3);
-  border: 1px solid var(--border-emphasis);
-  border-radius: var(--radius-md);
-  color: var(--text-subtle);
-  font-size: var(--fs-13);
-}
-
-/* Phone bezel — for embedding mocks in marketing/showcase contexts */
-.k-phone {
-  width: var(--layout-mobile-w);
-  background-color: var(--surface-0);
-  border: 1px solid var(--border-emphasis);
-  border-radius: var(--radius-phone);
-  overflow: hidden;
-  position: relative;
-}

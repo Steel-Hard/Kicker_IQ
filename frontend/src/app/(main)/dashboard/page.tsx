@@ -10,6 +10,7 @@ import { formatNumber, formatDelta } from '@/lib/utils'
 import { useAthletes } from '@/context/AthleteContext'
 import { useAuth } from '@/context/AuthContext'
 import { Avatar } from '@/components/kicker/avatar'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 export default function DashboardPage() {
   const { loading: authLoading } = useAuth()
@@ -69,42 +70,45 @@ export default function DashboardPage() {
       >
         <div>
           <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.2 }}>
-            Kicker IQ Dashboard
+            Kicker
           </div>
           <div style={{ fontSize: 10, color: 'var(--text-subtle)', lineHeight: 1.3 }}>
             Sessão Ativa: {new Date().toLocaleDateString()}
           </div>
         </div>
-        <button
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: 10,
-            border: '1px solid var(--border-emphasis)',
-            background: 'transparent',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            position: 'relative',
-          }}
-        >
-          <Bell size={14} color="var(--text-secondary)" />
-          {alertAthletes.length > 0 && (
-            <span
-              style={{
-                position: 'absolute',
-                top: -3,
-                right: -3,
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                background: 'var(--danger)',
-                border: '1.5px solid var(--surface-1)',
-              }}
-            />
-          )}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <ThemeToggle />
+          <button
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: 10,
+              border: '1px solid var(--border-emphasis)',
+              background: 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              position: 'relative',
+            }}
+          >
+            <Bell size={14} color="var(--text-secondary)" />
+            {alertAthletes.length > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: -3,
+                  right: -3,
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: 'var(--danger)',
+                  border: '1.5px solid var(--surface-1)',
+                }}
+              />
+            )}
+          </button>
+        </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: '16px 14px', paddingBottom: 24 }}>
