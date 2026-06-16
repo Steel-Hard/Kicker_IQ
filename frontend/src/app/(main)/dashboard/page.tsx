@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Bell, ChevronRight, Loader2, Brain, AlertCircle, TrendingUp, Info, X } from 'lucide-react'
+import { Bell, ChevronRight, Loader2, Brain, AlertCircle, TrendingUp, Info, X, PieChart as PieIcon } from 'lucide-react'
 import Link from 'next/link'
 import { KpiCard } from '@/components/kicker/kpi-card'
 import { AlertBanner } from '@/components/kicker/alert-banner'
@@ -29,6 +29,10 @@ import {
   AreaChart,
   Area,
   CartesianGrid,
+  PieChart,
+  Pie,
+  BarChart,
+  Bar,
 } from 'recharts'
 
 interface DashboardSummary {
@@ -103,26 +107,37 @@ export default function DashboardPage() {
   const { alerts } = useAlerts()
   
   const [dashboardData, setDashboardData] = useState<DashboardSummary | null>(null)
-  const [loadingSummary, setLoadingSummary] = useState(true)
+  const [teamClassification, setTeamClassification] = useState<any>(null)
+  const [analyticsStats, setAnalyticsStats] = useState<any>(null)
+  const [analyticsAtletas, setAnalyticsAtletas] = useState<any[]>([])
+  const [loadingData, setLoadingData] = useState(true)
   const [showGlossary, setShowGlossary] = useState(false)
 
   useEffect(() => {
-    async function fetchSummary() {
+    async function fetchData() {
       if (!token) return
       try {
-        const data = await apiService.dashboard.getSummary(token)
-        setDashboardData(data)
+        const [summary, classification, stats, atletasList] = await Promise.all([
+          apiService.dashboard.getSummary(token),
+          apiService.model.getTeamClassification(token),
+          apiService.analytics.getStats(token),
+          apiService.analytics.getAtletas(token)
+        ])
+        setDashboardData(summary)
+        setTeamClassification(classification)
+        setAnalyticsStats(stats)
+        setAnalyticsAtletas(atletasList)
       } catch (err) {
-        console.error("Failed to fetch dashboard summary", err)
+        console.error("Failed to fetch dashboard data", err)
       } finally {
-        setLoadingSummary(false)
+        setLoadingData(false)
       }
     }
-    fetchSummary()
+    fetchData()
   }, [token])
 
   const activeAlerts = alerts.filter(a => a.status === 'active')
-  const isLoading = authLoading || (athletesLoading && athletes.length === 0) || (loadingSummary && !dashboardData)
+  const isLoading = authLoading || (athletesLoading && athletes.length === 0) || (loadingData && !dashboardData)
 
   const stats = useMemo(() => {
     if (dashboardData?.teamStats) return dashboardData.teamStats
@@ -139,6 +154,39 @@ export default function DashboardPage() {
       pseDelta: 0,
     }
   }, [dashboardData, athletes])
+
+  const distributionData = useMemo(() => {
+    if (!teamClassification?.percentages) return []
+    return Object.entries(teamClassification.percentages).map(([key, value]) => ({
+      name: key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '),
+      value: value as number,
+      key
+    }))
+  }, [teamClassification])
+
+  const COLORS: Record<string, string> = {
+    resistente: '#1d9e75',
+    explosivo: '#ff7f0e',
+    baixo_volume: '#2ca02c',
+    moderado: '#9467bd'
+  }
+
+  const classData = useMemo(() => {
+    if (!analyticsStats) return [];
+    return [
+      { name: 'Alta de Desempenho', value: analyticsStats.altas_desempenho, fill: 'var(--success)' },
+      { name: 'Desempenho Médio', value: analyticsStats.desempenho_medio, fill: 'var(--text-subtle)' },
+      { name: 'Queda de Desempenho', value: analyticsStats.quedas_desempenho, fill: 'var(--danger)' },
+    ];
+  }, [analyticsStats]);
+
+  const anomalyRankData = useMemo(() => {
+    if (!analyticsAtletas) return [];
+    return [...analyticsAtletas]
+      .sort((a, b) => b.anomalies_count - a.anomalies_count)
+      .slice(0, 15)
+      .map(a => ({ id: a.athlete_id, anomalias: a.anomalies_count }));
+  }, [analyticsAtletas]);
 
   if (isLoading) {
     return (
@@ -264,30 +312,30 @@ export default function DashboardPage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '16px 14px', paddingBottom: 100 }}>
         
         {/* KPI Row */}
-        <section style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+        <section style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
           <KpiCard
-            label="Velocidade Média"
-            value={`${formatNumber(stats.avgSpeed, 1)} km/h`}
-            delta={formatDelta(stats.speedDelta)}
-            deltaDirection={stats.speedDelta >= 0 ? "up" : "down"}
+            label="ATLETAS"
+            value={String(analyticsStats?.total_atletas || 0)}
           />
           <KpiCard
-            label="Dist. Sprint Média"
-            value={`${Math.round(stats.avgSprintDist)} m`}
-            delta={formatDelta(stats.sprintDelta)}
-            deltaDirection={stats.sprintDelta >= 0 ? "up" : "down"}
+            label="SESSÕES"
+            value={String(analyticsStats?.total_sessoes || 0)}
           />
           <KpiCard
-            label="Carga Média"
-            value={`${Math.round(stats.avgLoad)} AU`}
-            delta={formatDelta(stats.loadDelta)}
-            deltaDirection={stats.loadDelta >= 0 ? "up" : "down"}
+            label="ALTA DE DESEMPENHO"
+            value={String(analyticsStats?.altas_desempenho || 0)}
           />
           <KpiCard
-            label="PSE Média"
-            value={formatNumber(stats.avgPse, 1)}
-            delta={formatDelta(stats.pseDelta)}
-            deltaDirection={stats.pseDelta > 5 ? 'down' : 'up'}
+            label="DESEMPENHO MÉDIO"
+            value={String(analyticsStats?.desempenho_medio || 0)}
+          />
+          <KpiCard
+            label="QUEDA DE DESEMPENHO"
+            value={String(analyticsStats?.quedas_desempenho || 0)}
+          />
+          <KpiCard
+            label="ANOMALIAS (IF)"
+            value={String(analyticsStats?.total_anomalias || 0)}
           />
         </section>
 
@@ -312,36 +360,131 @@ export default function DashboardPage() {
         {/* Main Charts Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20 }}>
           
-          {/* Squad Radar Card */}
-          <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border-default)', borderRadius: 16, padding: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-              <div style={{ background: 'var(--primary)', padding: 6, borderRadius: 8 }}>
-                <Brain size={16} color="#000" />
+          {/* Team Distribution & Anomaly Ranking */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
+            {/* Team Distribution Card */}
+            <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border-default)', borderRadius: 16, padding: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                <div style={{ background: 'var(--primary-strong)', padding: 6, borderRadius: 8 }}>
+                  <PieIcon size={16} color="#000" />
+                </div>
+                <h3 style={{ fontSize: 14, fontWeight: 600 }}>Distribuição de Classificação das Sessões</h3>
               </div>
-              <h3 style={{ fontSize: 14, fontWeight: 600 }}>Perfil Físico do Elenco</h3>
+              <div style={{ height: 220 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={classData} layout="vertical" margin={{ top: 0, right: 30, left: 20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="var(--border-subtle)" />
+                    <XAxis type="number" hide />
+                    <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-subtle)', fontSize: 10 }} width={120} />
+                    <Tooltip cursor={{ fill: 'transparent' }} content={<CustomTooltip />} />
+                    <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={20}>
+                      {classData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-            
-            <div style={{ height: 260 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={dashboardData?.squadRadarAvg || []}>
-                  <PolarGrid stroke="var(--border-emphasis)" />
-                  <PolarAngleAxis 
-                    dataKey="subject" 
-                    tick={{ fill: 'var(--text-subtle)', fontSize: 10, fontWeight: 500 }}
-                  />
-                  <Radar
-                    name="Média Squad"
-                    dataKey="A"
-                    stroke="var(--primary)"
-                    fill="var(--primary)"
-                    fillOpacity={0.25}
-                    isAnimationActive={true}
-                    animationBegin={200}
-                    animationDuration={1000}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                </RadarChart>
-              </ResponsiveContainer>
+
+            {/* Anomaly Ranking Card */}
+            <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border-default)', borderRadius: 16, padding: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                <div style={{ background: 'var(--warning)', padding: 6, borderRadius: 8 }}>
+                  <AlertCircle size={16} color="#000" />
+                </div>
+                <h3 style={{ fontSize: 14, fontWeight: 600 }}>Anomalias por Atleta (Isolation Forest)</h3>
+              </div>
+              <div style={{ height: 220 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={anomalyRankData} margin={{ top: 0, right: 0, left: -20, bottom: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" />
+                    <XAxis dataKey="id" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-subtle)', fontSize: 10, angle: -45, textAnchor: 'end' }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-subtle)', fontSize: 10 }} />
+                    <Tooltip cursor={{ fill: 'transparent' }} content={<CustomTooltip />} />
+                    <Bar dataKey="anomalias" fill="var(--primary-strong)" radius={[4, 4, 0, 0]} barSize={20} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+
+          {/* Squad Profile & Radar */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
+            {/* IA Profile Distribution */}
+            <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border-default)', borderRadius: 16, padding: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                <div style={{ background: 'var(--primary-strong)', padding: 6, borderRadius: 8 }}>
+                  <PieIcon size={16} color="#000" />
+                </div>
+                <h3 style={{ fontSize: 14, fontWeight: 600 }}>Distribuição de Perfis (IA)</h3>
+              </div>
+              
+              <div style={{ height: 260, display: 'flex', alignItems: 'center' }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={distributionData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                      isAnimationActive={true}
+                    >
+                      {distributionData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[entry.key] || 'var(--primary)'} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<CustomTooltip />} />
+                  </PieChart>
+                </ResponsiveContainer>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingLeft: 10 }}>
+                  {distributionData.map((entry, index) => (
+                    <div key={index} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: COLORS[entry.key] || 'var(--primary)' }} />
+                      <span style={{ fontSize: 10, color: 'var(--text-secondary)', fontWeight: 500 }}>
+                        {entry.name}: <span style={{ color: 'var(--text-primary)' }}>{entry.value}%</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Squad Radar Card */}
+            <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border-default)', borderRadius: 16, padding: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                <div style={{ background: 'var(--primary)', padding: 6, borderRadius: 8 }}>
+                  <Brain size={16} color="#000" />
+                </div>
+                <h3 style={{ fontSize: 14, fontWeight: 600 }}>Perfil Físico do Elenco</h3>
+              </div>
+              
+              <div style={{ height: 260 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart data={dashboardData?.squadRadarAvg || []}>
+                    <PolarGrid stroke="var(--border-emphasis)" />
+                    <PolarAngleAxis 
+                      dataKey="subject" 
+                      tick={{ fill: 'var(--text-subtle)', fontSize: 10, fontWeight: 500 }}
+                    />
+                    <Radar
+                      name="Média Squad"
+                      dataKey="A"
+                      stroke="var(--primary)"
+                      fill="var(--primary)"
+                      fillOpacity={0.25}
+                      isAnimationActive={true}
+                      animationBegin={200}
+                      animationDuration={1000}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
 

@@ -59,16 +59,15 @@ export default function Home() {
         <section className="px-6 lg:px-20 py-20 bg-surface-2 border-y border-border-default">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
             <div className="space-y-2">
-              <p className="text-5xl font-bold text-primary-strong tracking-tighter">10.000+</p>
+              <p className="text-5xl font-bold text-primary-strong tracking-tighter">26</p>
               <p className="text-xs font-bold text-fg-subtle uppercase tracking-widest">Jogadores Monitorados</p>
             </div>
             <div className="space-y-2">
-              <p className="text-5xl font-bold text-primary-strong tracking-tighter">98%</p>
-              <p className="text-xs font-bold text-fg-subtle uppercase tracking-widest">Precisão de Dados</p>
+              <p className="text-xs font-bold text-fg-subtle uppercase tracking-widest">Alta Precisão de Dados</p>
             </div>
             <div className="space-y-2">
               <p className="text-5xl font-bold text-primary-strong tracking-tighter">50+</p>
-              <p className="text-xs font-bold text-fg-subtle uppercase tracking-widest">Ligas Atendidas</p>
+              <p className="text-xs font-bold text-fg-subtle uppercase tracking-widest">Capaz de atender ligas</p>
             </div>
           </div>
         </section>

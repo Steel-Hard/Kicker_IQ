@@ -4,32 +4,33 @@ import { AthleteService } from '../services/AthleteService';
 const service = new AthleteService();
 
 export class AthleteController {
-  async getAll(req: Request, res: Response) {
+  public getAll = async (req: Request, res: Response) => {
     try {
       const data = await service.getAllAthletes();
       return res.json(data);
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ error: 'Erro ao buscar atletas' });
+    } catch (error: any) {
+      console.error('Error in getAll athletes:', error);
+      return res.status(500).json({ error: error?.message || 'Erro ao buscar atletas' });
     }
   }
 
-  async getById(req: Request, res: Response) {
+  public getById = async (req: Request, res: Response) => {
     try {
       const id = Number(req.params.id);
 
-      if (!id) {
+      if (isNaN(id)) {
         return res.status(400).json({ error: 'ID inválido' });
       }
 
       const data = await service.getAthleteById(id);
       return res.json(data);
-    } catch (error) {
-      return res.status(500).json({ error: 'Erro ao buscar atleta' });
+    } catch (error: any) {
+      console.error('Error in getById athlete:', error);
+      return res.status(500).json({ error: error?.message || 'Erro ao buscar atleta' });
     }
   }
 
-  async getByDate(req: Request, res: Response) {
+  public getByDate = async (req: Request, res: Response) => {
     try {
       const { date } = req.params;
       if (!date) {
@@ -37,12 +38,13 @@ export class AthleteController {
       }
       const data = await service.getAthletesByDate(date);
       return res.json(data);
-    } catch (error) {
-      return res.status(500).json({ error: 'Erro ao buscar atletas por data' });
+    } catch (error: any) {
+      console.error('Error in getByDate athletes:', error);
+      return res.status(500).json({ error: error?.message || 'Erro ao buscar atletas por data' });
     }
   }
 
-  async importAthletes(req: Request, res: Response) {
+  public importAthletes = async (req: Request, res: Response) => {
     try {
       const { records } = req.body;
       if (!Array.isArray(records)) {
@@ -53,9 +55,9 @@ export class AthleteController {
       return res.json({
         message: `${records.length} registros importados com sucesso`,
       });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ error: 'Erro ao importar dados' });
+    } catch (error: any) {
+      console.error('Error in importAthletes:', error);
+      return res.status(500).json({ error: error?.message || 'Erro ao importar dados' });
     }
   }
 }

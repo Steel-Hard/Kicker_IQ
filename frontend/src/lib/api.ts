@@ -68,6 +68,10 @@ export const apiService = {
         method: "POST", // The backend route is POST
         headers: { "Authorization": `Bearer ${token}` }
       }),
+    getTeamClassification: (token: string) =>
+      apiService.get<any>("/model/team-classification", token),
+    getAthleteTimeline: (id: string, token: string) =>
+      apiService.get<any>(`/model/athlete/${id}/timeline`, token),
   },
 
   // Dashboard specific methods
@@ -128,6 +132,22 @@ export const apiService = {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` },
       }),
+  },
+
+  // Analytics specific methods (Python microservice)
+  analytics: {
+    getStats: (token: string) => apiService.get<any>("/analytics/stats", token),
+    getAtletas: (token: string) => apiService.get<any[]>("/analytics/atletas", token),
+    getRadar: (athleteIds: string[], features: string[], token: string) =>
+      request<any>("/analytics/radar", {
+        method: "POST",
+        body: JSON.stringify({ athleteIds, features }),
+        headers: { "Authorization": `Bearer ${token}` }
+      }),
+    getHistory: (athleteId: string, token: string) =>
+      apiService.get<any>(`/analytics/history/${athleteId}`, token),
+    getSimilarity: (athleteId: string, token: string, topN: number = 3) =>
+      apiService.get<any>(`/analytics/similarity/${athleteId}?topN=${topN}`, token),
   },
 };
 

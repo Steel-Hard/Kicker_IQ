@@ -61,8 +61,8 @@
 | Sprint                                    | Início     | Fim        | Status           | 📉 Burndown Chart                                        | Sprint Backlog/Review  |
 |:-----------------------------------------:|:----------:|:----------:|:----------------:|:---------------------------------------------------------:|:-----------------:|
 | 1 | 13/04/2026 | 30/04/2026 | 🟢 Concluído    | [Ver Gráfico](assets/burndown_1.png) |  [Ver](docs/sprint1.md) |
-| 2 | 04/05/2026 | 21/05/2026 | 🟠 Em andamento  | [Ver Gráfico](assets/burndown_2.png) |  [Ver](docs/sprint2.md) |
-| 3 | 25/05/2026 | 11/06/2026 | 🔴 A Fazer | [Ver Gráfico](assets/burndown_sp3.png) |  [Ver](docs/sprint3.md) |
+| 2 | 04/05/2026 | 21/05/2026 | 🟢 Concluído  | [Ver Gráfico](assets/burndown_2.png) |  [Ver](docs/sprint2.md) |
+| 3 | 25/05/2026 | 11/06/2026 | 🟢 Concluído | [Ver Gráfico](assets/burndown_sp3.png) |  [Ver](docs/sprint3.md) |
 
 ---
 ## Definition of Done
@@ -105,7 +105,7 @@ Quando os User Stories estiverem completos e entregues, o projeto estará pronto
 
  1. CLONE DOS PROJETOS (ORQUESTRADOR  E MICROSERVICES)
  ``` BASH
- git clone https://github.com/Steel-Hard/Kicker_IQ && cd Kicker_IQ && for repo in https://github.com/Steel-Hard/Kicker_IQ-model-kmeans https://github.com/Steel-Hard/Kicker_IQ-model-service; do git clone "$repo"; done
+ git clone https://github.com/Steel-Hard/Kicker_IQ && cd Kicker_IQ && for repo in https://github.com/Steel-Hard/Kicker_IQ-model-kmeans https://github.com/Steel-Hard/Kicker_IQ-model-service https://github.com/Steel-Hard/analise_atletas_kicker_v6; do git clone "$repo"; done
  ```
  2. RODAR DOCKER
  ```BASH

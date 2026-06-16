@@ -17,15 +17,15 @@ export default function ConfigPage() {
     {
       group: 'PERFIL',
       items: [
-        { icon: Bell,                          label: 'Notificações', desc: '2 alertas ativos' },
+  
         { icon: theme === 'dark' ? Moon : Sun, label: 'Aparência',    desc: theme === 'dark' ? 'Escuro' : 'Claro', onClick: toggleTheme },
       ],
     },
     {
       group: 'SISTEMA',
       items: [
-        { icon: Shield,     label: 'Segurança', desc: 'Alterar senha' },
-        { icon: HelpCircle, label: 'Ajuda',     desc: 'Central de suporte' },
+     
+        { icon: HelpCircle, label: 'Ajuda',     desc: 'https://github.com/Steel-Hard',},
       ],
     },
   ]
@@ -57,9 +57,9 @@ export default function ConfigPage() {
             <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-primary)', marginBottom: 3 }}>
               {user?.name || 'Analista Chefe'}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>São Paulo FC · Desempenho</div>
+           
             <div style={{ fontSize: 11, color: 'var(--primary-strong)', marginTop: 4 }}>
-              {user?.email || 'analista@saopaulofc.net'}
+              {user?.email || ''}
             </div>
           </div>
         </div>
@@ -122,7 +122,7 @@ export default function ConfigPage() {
         {/* Version */}
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 10, color: 'var(--text-subtle)' }}>
-            Kicker v1.0.0 · São Paulo FC
+            Kicker v1.0.0
           </div>
           <div style={{ fontSize: 9, color: 'var(--border-muted)', marginTop: 3 }}>
             Design System v1

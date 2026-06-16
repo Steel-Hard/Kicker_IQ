@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Kicker",
   description: "Advanced football player performance analysis",
   icons: {
-    icon: "/kicker_shield.svg",
+    icon: "/favicon_io/favicon.ico",
   },
 };
 

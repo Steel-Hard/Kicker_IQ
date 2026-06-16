@@ -8,27 +8,27 @@ import { config } from '../config';
 import mongoose from 'mongoose';
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
-import * as fsExtra from 'fs-extra';
 
 class UserController {
-  //TODO: VERIFICAR OS TRATAMENDO DE ERROS
-  public async createUser(req: Request, res: Response) {
+  public createUser = async (req: Request, res: Response) => {
     try {
       const { name, email, password } = req.body;
       const nPassword = await bcrypt.hash(password, 8);
 
-      const data = await userModel.insertOne({
+      const data = await userModel.create({
         name,
         email,
         password: nPassword,
         authProvider: 'local',
       });
       res.status(201).json({ data });
-    } catch (error) {
-      res.status(500).json({ message: 'Erro ao criar usuário' });
+    } catch (error: any) {
+      console.error('Erro ao criar usuário:', error);
+      res.status(500).json({ message: error?.message || 'Erro ao criar usuário' });
     }
   }
-  public async readUser(req: Request, res: Response): Promise<any> {
+
+  public readUser = async (req: Request, res: Response): Promise<any> => {
     try {
       const { email, password } = req.body;
       const data = await userModel.findOne({ email: email });
@@ -43,7 +43,7 @@ class UserController {
         return res.status(401).json({ message: 'Senha incorreta' });
       }
 
-      const token = jwt.sign(data.id, jwtSecret, {});
+      const token = jwt.sign({ id: data.id }, jwtSecret, {});
 
       return res.status(200).json({
         message: 'Sucesso no Login',
@@ -56,11 +56,13 @@ class UserController {
           avatar: data.avatar,
         },
       });
-    } catch (error) {
-      res.status(500).json({ message: 'Erro ao buscar usuário' });
+    } catch (error: any) {
+      console.error('Erro no login:', error);
+      res.status(500).json({ message: error?.message || 'Erro ao buscar usuário' });
     }
   }
-  public async AuthWithGoogle(req: Request, res: Response): Promise<any> {
+
+  public AuthWithGoogle = async (req: Request, res: Response): Promise<any> => {
     try {
       const { idToken } = req.params;
       const client = new OAuth2Client(config.CLIENT_ID);
@@ -96,7 +98,7 @@ class UserController {
         }
       }
 
-      const token = jwt.sign(user.id, jwtSecret, {});
+      const token = jwt.sign({ id: user.id }, jwtSecret, {});
 
       return res.status(200).json({
         message: 'Sucesso no Login',
@@ -109,16 +111,17 @@ class UserController {
           avatar: user.avatar,
         },
       });
-    } catch (error) {
-      res.status(500).json({ message: 'Erro ao autenticar com Google' });
+    } catch (error: any) {
+      console.error('Erro na autenticação Google:', error);
+      res.status(500).json({ message: error?.message || 'Erro ao autenticar com Google' });
     }
   }
 
-  public async updatePassword(
+  public updatePassword = async (
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<void> {
+  ): Promise<void> => {
     try {
       const { email, currentPassword, newPassword } = req.body;
       const user = await userModel.findOne({ email: email });
@@ -143,16 +146,17 @@ class UserController {
         { $set: { password: hashedNewPassword } },
       );
       res.status(200).json({ message: 'Senha atualizada com sucesso' });
-    } catch (error) {
-      res.status(500).json({ message: 'Erro ao atualizar senha' });
+    } catch (error: any) {
+      console.error('Erro ao atualizar senha:', error);
+      res.status(500).json({ message: error?.message || 'Erro ao atualizar senha' });
     }
   }
 
-  public async updateAvatar(
+  public updateAvatar = async (
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<void> {
+  ): Promise<void> => {
     try {
       const { user } = res.locals;
 
@@ -168,10 +172,8 @@ class UserController {
         api_secret: config.CLOUDNARY_API_SECRET,
       });
 
-      // Buscar usuário atual
       const currentUser = await userModel.findById(user);
 
-      // Se existe avatar anterior, tenta deletar
       if (currentUser?.avatar) {
         try {
           const oldPublicId = currentUser.avatar
@@ -186,7 +188,6 @@ class UserController {
         }
       }
 
-      // Upload da nova imagem
       const publicId = `user_${user}_${Date.now()}`;
       const result = await cloudinary.uploader.upload(filePath, {
         folder: 'vesta',
@@ -198,7 +199,6 @@ class UserController {
         ],
       });
 
-      // Remover arquivo temporário
       fs.unlinkSync(filePath);
 
       await userModel.updateOne(
@@ -210,12 +210,13 @@ class UserController {
         message: 'Avatar atualizado com sucesso',
         url: result.secure_url,
       });
-    } catch (error) {
-      res.status(500).json({ message: 'Erro ao atualizar avatar' });
+    } catch (error: any) {
+      console.error('Erro ao atualizar avatar:', error);
+      res.status(500).json({ message: error?.message || 'Erro ao atualizar avatar' });
     }
   }
 
-  public async updatePushToken(req: Request, res: Response): Promise<Response> {
+  public updatePushToken = async (req: Request, res: Response): Promise<Response> => {
     try {
       const { user } = res.locals;
       const { pushToken } = req.body;
@@ -231,9 +232,9 @@ class UserController {
       return res
         .status(200)
         .json({ message: 'Push token atualizado com sucesso' });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao atualizar push token:', error);
-      return res.status(500).json({ message: 'Erro interno do servidor' });
+      return res.status(500).json({ message: error?.message || 'Erro interno do servidor' });
     }
   }
 }
