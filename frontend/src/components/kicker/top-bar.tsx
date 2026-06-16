@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 interface TopBarProps {
   title: string
@@ -68,7 +69,10 @@ export function TopBar({ title, subtitle, back, right }: TopBarProps) {
           </div>
         )}
       </div>
-      {right && <div style={{ flexShrink: 0 }}>{right}</div>}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        <ThemeToggle />
+        {right}
+      </div>
     </div>
   )
 }

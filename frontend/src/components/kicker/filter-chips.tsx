@@ -32,7 +32,7 @@ export function FilterChips({ value, onChange }: FilterChipsProps) {
       {filters.map((f) => (
         <button
           key={f.value}
-          aria-selected={value === f.value}
+          aria-pressed={value === f.value}
           onClick={() => onChange(f.value)}
           className={cn('k-chip', value === f.value && 'k-chip--selected')}
         >

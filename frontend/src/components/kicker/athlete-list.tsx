@@ -9,9 +9,10 @@ interface AthleteListProps {
   athletes: Athlete[];
   loading?: boolean;
   emptyMessage?: string;
+  analyticsData?: Record<string, any>;
 }
 
-export function AthleteList({ athletes, loading, emptyMessage = "Nenhum atleta encontrado" }: AthleteListProps) {
+export function AthleteList({ athletes, loading, emptyMessage = "Nenhum atleta encontrado", analyticsData }: AthleteListProps) {
   if (loading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 0', color: 'var(--text-subtle)' }}>
@@ -32,7 +33,7 @@ export function AthleteList({ athletes, loading, emptyMessage = "Nenhum atleta e
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       {athletes.map((athlete) => (
-        <AthleteCard key={athlete.id} athlete={athlete} />
+        <AthleteCard key={athlete.id} athlete={athlete} analyticsData={analyticsData?.[athlete.id]} />
       ))}
     </div>
   );

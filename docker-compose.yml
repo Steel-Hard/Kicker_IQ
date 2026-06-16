@@ -32,11 +32,27 @@ services:
     depends_on:
       - postgres-db
 
+  # MicroserviÃ§o de AnÃ¡lise de Atletas (Python / Isolation Forest)
+  analytics-service:
+    build:
+      context: ./analise_atletas_kicker_v6
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/
+      - DATABASE_NAME=analise_atletas
+    volumes:
+      - ./analise_atletas_kicker_v6/app:/app
+      - ./analise_atletas_kicker_v6/models_onnx:/models_onnx
+    depends_on:
+      - mongodb
+
   # Gateway / Backend Principal
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile"
     ports:
       - "3030:3030"
     environment:

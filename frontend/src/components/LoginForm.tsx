@@ -35,46 +35,46 @@ export function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md p-8 dark:bg-zinc-900 rounded-2xl shadow-xl border border-gray-100 dark:border-zinc-800  dark:text-amber-50">
-     <h2 className="text-2xl font-bold mb-6 text-center italic uppercase tracking-tighter">Entrar no <span className="text-primary">Kicker</span></h2>
-      
+    <div className="w-full max-w-md p-8 bg-surface-2 rounded-2xl shadow-xl border border-border-default text-fg">
+     <h2 className="text-2xl font-bold mb-6 text-center uppercase tracking-tighter">Entrar no <span className="text-primary-strong">Kicker</span></h2>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-widest mb-1 opacity-50">E-mail</label>
+          <label className="block text-xs font-bold uppercase tracking-widest mb-1 text-fg-subtle">E-mail</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-zinc-800  dark:text-amber-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-primary outline-none transition-all"
+            className="k-field"
             placeholder="seu@email.com"
             required
           />
         </div>
-        
+
         <div>
-          <label className="block text-xs font-bold uppercase tracking-widest mb-1 opacity-50">Senha</label>
+          <label className="block text-xs font-bold uppercase tracking-widest mb-1 text-fg-subtle">Senha</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-zinc-800  dark:text-amber-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-primary outline-none transition-all"
+            className="k-field"
             placeholder="••••••••"
             required
           />
         </div>
 
         {error && (
-          <p className="text-red-500 text-xs font-bold mt-2">{error}</p>
+          <p className="text-kicker-danger text-xs font-bold mt-2">{error}</p>
         )}
-        
+
         {success && (
-          <p className="text-green-500 text-xs font-bold mt-2">{success}</p>
+          <p className="text-kicker-success text-xs font-bold mt-2">{success}</p>
         )}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-4 bg-primary hover:opacity-90 text-black font-black uppercase tracking-widest rounded-lg transition-all transform active:scale-[0.98] disabled:opacity-50 shadow-lg shadow-primary/20"
+          className="k-btn-primary w-full uppercase tracking-widest"
         >
           {loading ? "Processando..." : "Entrar"}
         </button>
@@ -82,10 +82,10 @@ export function LoginForm() {
 
       <div className="mt-6 relative">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-200 dark:border-zinc-800"></div>
+          <div className="w-full border-t border-border-default"></div>
         </div>
         <div className="relative flex justify-center text-xs uppercase font-bold">
-          <span className="bg-white dark:bg-zinc-900 px-2 opacity-40 text-foreground">Ou continue com</span>
+          <span className="bg-surface-2 px-2 text-fg-subtle">Ou continue com</span>
         </div>
       </div>
 
@@ -95,7 +95,7 @@ export function LoginForm() {
           console.log("Iniciando Login com Google...");
           setError("Integração do Google Auth requer configuração de CLIENT_ID no frontend.");
         }}
-        className="mt-4 w-full py-3 border border-gray-200 dark:border-zinc-800 rounded-lg flex items-center justify-center gap-3 hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-all font-bold text-sm text-foreground"
+        className="mt-4 w-full h-11 border border-border-default rounded-md flex items-center justify-center gap-3 hover:bg-surface-3 transition-colors font-bold text-sm text-fg"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24">
           <path
@@ -118,8 +118,8 @@ export function LoginForm() {
         Google
       </button>
       
-      <p className="mt-6 text-center text-xs font-medium opacity-60">
-        Não tem uma conta? <Link href="/register" className="text-secondary hover:underline">Cadastre-se</Link>
+      <p className="mt-6 text-center text-xs font-medium text-fg-muted">
+        Não tem uma conta? <Link href="/register" className="text-primary-strong hover:underline">Cadastre-se</Link>
       </p>
     </div>
   );

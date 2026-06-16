@@ -15,4 +15,9 @@ export const pool = new Pool({
   ssl: false,
 });
 
+// Handler for idle client errors to prevent process crash
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle database client', err);
+});
+
 export const query = (text: string, params?: any[]) => pool.query(text, params);

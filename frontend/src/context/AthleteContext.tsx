@@ -13,7 +13,7 @@ interface AthleteContextType {
   getAthleteById: (id: string) => Promise<Athlete | null>;
   mapBackendToAthlete: (b: Record<string, unknown>) => Athlete;
   getHistoricalScores: (id: string) => Promise<Athlete['clusterScores'] | null>;
-  predictMatch: (metrics: Record<string, unknown>) => Promise<any>;
+  predictMatch: (metrics: Record<string, unknown>) => Promise<{ clusterName: string; confidence: string; allScores: Array<{ cluster: string; score: string }>; [key: string]: unknown } | null>;
 }
 
 const AthleteContext = createContext<AthleteContextType | undefined>(undefined);

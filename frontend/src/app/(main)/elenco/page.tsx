@@ -1,16 +1,41 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
+import { Search, SlidersHorizontal, Loader2 } from 'lucide-react'
 import { TopBar } from '@/components/kicker/top-bar'
 import { AthleteList } from '@/components/kicker/athlete-list'
 import { FilterChips, type FilterValue } from '@/components/kicker/filter-chips'
 import { useAthletes } from '@/context/AthleteContext'
+import { useAuth } from '@/context/AuthContext'
+import { apiService } from '@/lib/api'
 
 export default function ElencoPage() {
   const { athletes, loading, error } = useAthletes()
+  const { token } = useAuth()
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<FilterValue>('todos')
+  const [analyticsData, setAnalyticsData] = useState<Record<string, any>>({})
+  const [loadingAnalytics, setLoadingAnalytics] = useState(false)
+
+  useEffect(() => {
+    async function fetchAnalytics() {
+      if (!token) return
+      setLoadingAnalytics(true)
+      try {
+        const data = await apiService.analytics.getAtletas(token)
+        const map = data.reduce((acc: any, curr: any) => {
+          acc[curr.athlete_id] = curr
+          return acc
+        }, {})
+        setAnalyticsData(map)
+      } catch (err) {
+        console.error("Failed to load analytics for elenco", err)
+      } finally {
+        setLoadingAnalytics(false)
+      }
+    }
+    fetchAnalytics()
+  }, [token])
 
   const filtered = useMemo(() => {
     return athletes.filter((a) => {
@@ -97,11 +122,19 @@ export default function ElencoPage() {
 
         {/* List */}
         <div style={{ padding: '0 14px', paddingBottom: 24 }}>
-          <AthleteList 
-            athletes={filtered} 
-            loading={loading && athletes.length === 0} 
-            emptyMessage="Nenhum atleta encontrado com os filtros atuais."
-          />
+          {(loading || loadingAnalytics) && athletes.length === 0 ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 0', color: 'var(--text-subtle)' }}>
+              <Loader2 className="animate-spin" size={24} />
+              <span style={{ marginLeft: 8 }}>Carregando...</span>
+            </div>
+          ) : (
+            <AthleteList 
+              athletes={filtered} 
+              loading={false}
+              emptyMessage="Nenhum atleta encontrado com os filtros atuais."
+              analyticsData={analyticsData}
+            />
+          )}
         </div>
       </div>
     </div>
