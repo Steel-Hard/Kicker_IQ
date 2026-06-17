@@ -117,16 +117,16 @@ export default function DashboardPage() {
     async function fetchData() {
       if (!token) return
       try {
-        const [summary, classification, stats, atletasList] = await Promise.all([
+        const [summaryResult, classificationResult, statsResult, atletasResult] = await Promise.allSettled([
           apiService.dashboard.getSummary(token),
           apiService.model.getTeamClassification(token),
           apiService.analytics.getStats(token),
           apiService.analytics.getAtletas(token)
         ])
-        setDashboardData(summary)
-        setTeamClassification(classification)
-        setAnalyticsStats(stats)
-        setAnalyticsAtletas(atletasList)
+        if (summaryResult.status === 'fulfilled') setDashboardData(summaryResult.value)
+        if (classificationResult.status === 'fulfilled') setTeamClassification(classificationResult.value)
+        if (statsResult.status === 'fulfilled') setAnalyticsStats(statsResult.value)
+        if (atletasResult.status === 'fulfilled') setAnalyticsAtletas(atletasResult.value)
       } catch (err) {
         console.error("Failed to fetch dashboard data", err)
       } finally {
@@ -648,7 +648,7 @@ export default function DashboardPage() {
                     ID: {athlete.id}
                   </div>
                   <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
-                    {athlete.position} · {athlete.group || 'Geral'}
+                    {(athlete.position && athlete.position !== 'None' ? athlete.position : 'N/A')} · {(athlete.group && athlete.group !== 'None' ? athlete.group : 'Geral')}
                   </div>
                 </div>
 

@@ -1,7 +1,7 @@
 export function mapToEnrichedAthlete(row: any) {
   const get = (keys: string[]) => {
     for (const k of keys) {
-      if (row[k] !== undefined && row[k] !== null) return row[k];
+      if (row[k] !== undefined && row[k] !== null && row[k] !== 'None') return row[k];
     }
     return null;
   };
@@ -55,8 +55,8 @@ export function mapToEnrichedAthlete(row: any) {
     name: nameStr,
     initials,
     number: parseInt(athleteId) || 0,
-    position: row['Position'] || row['athlete_position'] || 'ATA',
-    group: row['Groups'] || row['athlete_group'] || 'Principal',
+    position: get(['Position', 'Athlete Position', 'athlete_position']) || 'ATA',
+    group: get(['Groups', 'Athlete Groups', 'athlete_group']) || 'Principal',
     age: 24, // default if missing
     speed,
     sprintDistance,

@@ -116,7 +116,18 @@ export default function CompararPage() {
         setLoadingRadar(true)
         try {
           const ids = selectedAthletes.map(a => a.id)
-          const features = ["Distance (m)", "Sprint Distance", "Top Speed", "Avg Speed (kph)", "Workload", "Duration (mins)"]
+          const features = [
+            "Distance (m)",
+            "Sprint Distance (m)",
+            "Top Speed (kph)",
+            "Avg Speed (kph)",
+            "Workload",
+            "Duration (mins)",
+            "High Intensity Running (m)",
+            "Accelerations",
+            "Decelerations",
+            "No. of Sprints"
+          ]
           const data = await apiService.analytics.getRadar(ids, features, token)
           setRadarData(data)
         } catch (err) {

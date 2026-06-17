@@ -12,7 +12,7 @@ if (!connectionString) {
 
 export const pool = new Pool({
   connectionString,
-  ssl: false,
+  ssl: connectionString.includes('neon.tech') ? { rejectUnauthorized: false } : false,
 });
 
 // Handler for idle client errors to prevent process crash
