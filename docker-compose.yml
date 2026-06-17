@@ -43,8 +43,7 @@ services:
       - MONGODB_URI=mongodb://mongodb:27017/
       - DATABASE_NAME=analise_atletas
     volumes:
-      - ./analise_atletas_kicker_v6/app:/app
-      - ./analise_atletas_kicker_v6/models_onnx:/models_onnx
+      - ./analise_atletas_kicker_v6:/app
     depends_on:
       - mongodb
 
@@ -52,7 +51,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile"
+      dockerfile: Dockerfile
     ports:
       - "3030:3030"
     environment:
