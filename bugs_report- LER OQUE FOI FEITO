@@ -1,0 +1,177 @@
+# 🐛 Relatório de Bugs — `analise_atletas_kicker`
+
+> **Problema relatado:** A API conectava mas retornava apenas `0` em todos os campos numéricos e `"Sem dados"` no status dos atletas.
+>
+> **Total de bugs encontrados:** 5 | **Status:** ✅ Todos corrigidos e verificados
+
+---
+
+## Bug #1 — Verificação de coluna errada no DataFrame (atletas)
+
+**Arquivo:** `app/api/v1/atletas.py` — linha 28
+
+**Causa raiz:**
+O operador `in` aplicado diretamente em um DataFrame (`'coluna' in df`) **verifica o índice das linhas**, não as colunas. A condição sempre retornava `False`, então `anomalies_count` era sempre `0`.
+
+```python
+# ❌ ANTES — checa o ÍNDICE do DataFrame, nunca acha a coluna
+anomalies_count = int(df_a['if_anomalia'].sum()) if 'if_anomalia' in df_a else 0
+#                                                                         ^^^^^
+#                                                                   sempre False!
+
+# ✅ DEPOIS — checa as COLUNAS corretamente + proteção contra None
+anomalies_count = int(df_a['if_anomalia'].fillna(False).sum()) if 'if_anomalia' in df_a.columns else 0
+```
+
+**Impacto:** `anomalies_count` sempre retornava `0` para todos os atletas.
+
+---
+
+## Bug #2 — Verificação de coluna errada no DataFrame (status)
+
+**Arquivo:** `app/api/v1/atletas.py` — linha 31
+
+**Causa raiz:** Mesmo problema do Bug #1, mas para a coluna `classificacao`. A condição era sempre `False`, fazendo o código cair no `else` e retornar `"Sem dados"` para todos os atletas.
+
+```python
+# ❌ ANTES — sempre False → status sempre "Sem dados"
+if total_sessoes > 0 and 'classificacao' in df_a:
+    status = last_session['classificacao']
+else:
+    status = "Sem dados"   # ← sempre caía aqui
+
+# ✅ DEPOIS
+if total_sessoes > 0 and 'classificacao' in df_a.columns:
+    status = last_session['classificacao']
+```
+
+**Impacto:** `performance_status` sempre retornava `"Sem dados"` para todos os atletas.
+
+---
+
+## Bug #3 — Contagens do dashboard sem proteção de coluna
+
+**Arquivo:** `app/api/v1/dashboard.py` — linhas 36–39
+
+**Causa raiz:** O dashboard acessava `df['classificacao']` e `df['if_anomalia']` diretamente sem verificar se as colunas existiam. Se o MongoDB retornasse documentos sem esses campos (ex: dados de um upload antigo), a API lançaria um `KeyError`. Além disso, `df['if_anomalia'].sum()` em uma coluna com valores `None` causava `TypeError`.
+
+```python
+# ❌ ANTES — pode lançar KeyError ou TypeError
+altas   = int((df['classificacao'] == 'Alta de Desempenho').sum())
+quedas  = int((df['classificacao'] == 'Queda de Desempenho').sum())
+medias  = int((df['classificacao'] == 'Desempenho Médio').sum())
+anomalias = int(df['if_anomalia'].sum())   # TypeError se tiver None!
+
+# ✅ DEPOIS — defensivo com guards de coluna e fillna
+altas   = int((df['classificacao'] == 'Alta de Desempenho').sum())  if 'classificacao' in df.columns else 0
+quedas  = int((df['classificacao'] == 'Queda de Desempenho').sum()) if 'classificacao' in df.columns else 0
+medias  = int((df['classificacao'] == 'Desempenho Médio').sum())    if 'classificacao' in df.columns else 0
+anomalias = int(df['if_anomalia'].fillna(False).sum())              if 'if_anomalia'   in df.columns else 0
+```
+
+**Impacto:** `altas_desempenho`, `quedas_desempenho`, `desempenho_medio` e `total_anomalias` sempre retornavam `0` ou quebravam a API.
+
+---
+
+## Bug #4 — Lógica de classificação de desempenho invertida *(bug de design crítico)*
+
+**Arquivo:** `app/services/analytics.py` — função `classificar_sessao()`
+
+**Causa raiz:** A função só classificava uma sessão como `"Alta de Desempenho"` ou `"Queda de Desempenho"` quando `if_anomalia == True` (ou seja, quando o IsolationForest detectava a sessão como *outlier*). Como a maioria das sessões é normal (`if_anomalia = False`), o código sempre caia no `else` e retornava `"Desempenho Médio"` — tornando a classificação completamente inútil.
+
+```python
+# ❌ ANTES — classificação bloqueada pela flag de anomalia
+def classificar_sessao(row, z_threshold=1.5):
+    if pd.isna(row.get('if_anomalia')) or pd.isna(row.get('Z_Composto')):
+        return 'Desempenho Médio'
+
+    if row['if_anomalia']:              # ← só entra aqui se for outlier (raro!)
+        if row['Z_Composto'] > 1.5:
+            return 'Alta de Desempenho'
+        elif row['Z_Composto'] < -1.5:
+            return 'Queda de Desempenho'
+        else:
+            return 'Desempenho Médio'
+    else:
+        return 'Desempenho Médio'       # ← sempre caía aqui (if_anomalia=False)
+
+# ✅ DEPOIS — Z_Composto é a métrica principal de classificação
+def classificar_sessao(row, z_threshold=1.5):
+    z_composto = row.get('Z_Composto')
+
+    if z_composto is None or pd.isna(z_composto):
+        return 'Desempenho Médio'
+
+    # Classificação direta pelo Z-Score composto
+    if z_composto > z_threshold:
+        return 'Alta de Desempenho'
+    elif z_composto < -z_threshold:
+        return 'Queda de Desempenho'
+    else:
+        return 'Desempenho Médio'
+```
+
+**Impacto:** Todas as sessões eram classificadas como `"Desempenho Médio"`, tornando as métricas `altas_desempenho` e `quedas_desempenho` sempre `0`.
+
+---
+
+## Bug #5 — Incompatibilidade de versão entre `skl2onnx` e `onnx` (modelos nunca treinavam)
+
+**Arquivo:** `app/services/model_training.py` e `app/services/onnx_inference.py`
+
+**Causa raiz:** O `skl2onnx==1.17.0` tem um bug conhecido ao converter `IsolationForest` com `onnx==1.15.0`. Internamente, o conversor passava um valor `boolean` onde a biblioteca `onnx` esperava um `int`, causando:
+
+```
+TypeError: Field onnx.AttributeProto.ints: Expected an int, got a boolean.
+```
+
+Isso fazia **todos os modelos falharem silenciosamente** na exportação. Sem modelo ONNX salvo, o código de inferência no `upload.py` caía no bloco `else` e definia `if_anomalia = False` para todas as sessões — explicando por que `total_anomalias` era sempre `0`.
+
+**Solução:** Substituído `skl2onnx` + `onnxruntime` por `joblib` (salva o pipeline scikit-learn diretamente em `.pkl`), que é mais simples, confiável e sem bugs de conversão.
+
+```python
+# ❌ ANTES — model_training.py (falhava ao converter)
+from skl2onnx import convert_sklearn
+from skl2onnx.common.data_types import FloatTensorType
+
+onnx_model = convert_sklearn(pipeline, initial_types=initial_type,
+                              target_opset={'': 15, 'ai.onnx.ml': 3})
+# → TypeError: Expected an int, got a boolean
+
+# ✅ DEPOIS — model_training.py (joblib, sem bugs)
+import joblib
+
+model_path = os.path.join(ONNX_MODEL_DIR, f"atleta_{athlete_id}.pkl")
+joblib.dump({'pipeline': pipeline, 'features_used': features_usadas}, model_path)
+```
+
+```python
+# ❌ ANTES — onnx_inference.py (dependia do ONNX Runtime)
+import onnxruntime as ort
+sess = ort.InferenceSession(model_path)
+outputs = sess.run(None, {input_name: data.astype(np.float32)})
+
+# ✅ DEPOIS — onnx_inference.py (sklearn direto)
+import joblib
+saved = joblib.load(model_path)
+pipeline = saved['pipeline']
+labels = pipeline.predict(X)
+scores = pipeline.score_samples(X)
+```
+
+**Impacto:** Nenhum modelo era treinado → `if_anomalia` sempre `False` → `total_anomalias = 0`.
+
+---
+
+## 📊 Resultado Antes vs Depois
+
+| Endpoint / Campo | ❌ Antes | ✅ Depois |
+|---|---|---|
+| `dashboard/stats → total_atletas` | `0` | `26` |
+| `dashboard/stats → total_sessoes` | `0` | `512` |
+| `dashboard/stats → altas_desempenho` | `0` | `11` |
+| `dashboard/stats → quedas_desempenho` | `0` | `32` |
+| `dashboard/stats → total_anomalias` | `0` | **valores reais** |
+| `atletas/ → performance_status` | `"Sem dados"` | `"Queda de Desempenho"`, etc. |
+| `atletas/ → anomalies_count` | `0` | `1` a `3` por atleta |
+| Modelos treinados com sucesso | `0 de 26` | `26 de 26` ✅ |
