@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.api.deps import get_current_user
 from app.repositories.sessao_repository import SessaoRepository
 from app.repositories.atleta_repository import AtletaRepository
-from app.schemas.responses import DashboardStats, RadarData, HistoricoSerie
+from app.schemas.responses import DashboardStats, RadarData, HistoricoSerie, SimilarityResponse
 from app.schemas.requests import CompareRequest
 from app.services.data_processing import FEATURES
-from app.services.analytics import construir_perfis
+from app.services.analytics import construir_perfis, sugerir_substitutos, calcular_zscore_por_atleta, FEATURES_COMPOSTAS
 import pandas as pd
 
 router = APIRouter()
@@ -129,3 +129,42 @@ async def get_historico(athlete_id: str, current_user: str = Depends(get_current
     anomalias = [bool(s.if_anomalia) for s in sessoes]
     
     return HistoricoSerie(datas=datas, valores=valores, anomalias=anomalias)
+
+@router.get("/similarity/{athlete_id}", response_model=list[SimilarityResponse])
+async def get_similarity(athlete_id: str, topN: int = 3, current_user: str = Depends(get_current_user)):
+    sessao_repo = SessaoRepository()
+    sessoes = await sessao_repo.get_all()
+    
+    if not sessoes:
+        raise HTTPException(status_code=404, detail="Sem dados de sessões.")
+    
+    # Map MongoDB fields to the expected feature names
+    FEATURE_TO_COL = {
+        'Distance (m)': 'distance_m',
+        'Workload': 'workload',
+        'High Intensity Running (m)': 'high_intensity_running_m',
+        'Sprint Distance (m)': 'sprint_distance_m',
+        'Accelerations': 'accelerations',
+        'Decelerations': 'decelerations',
+    }
+    
+    records = []
+    for s in sessoes:
+        rec = s.model_dump()
+        rec['Athlete ID'] = rec['athlete_id']
+        records.append(rec)
+    
+    df = pd.DataFrame(records)
+    
+    # Use available columns
+    available_features = [f for f in FEATURES_COMPOSTAS if FEATURE_TO_COL.get(f, f) in df.columns]
+    db_cols = [FEATURE_TO_COL.get(f, f) for f in available_features]
+    
+    if not db_cols:
+        return []
+    
+    # Build profiles: average z-scores per athlete
+    perfis = df.groupby('Athlete ID')[db_cols].mean()
+    
+    resultados = sugerir_substitutos(athlete_id, perfis, top_n=topN)
+    return resultados
