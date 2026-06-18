@@ -1,0 +1,65 @@
+time="2026-06-17T16:36:23-03:00" level=warning msg="The \"POSTGRES_URL\" variable is not set. Defaulting to a blank string."
+time="2026-06-17T16:36:23-03:00" level=warning msg="The \"POSTGRES_URL\" variable is not set. Defaulting to a blank string."
+time="2026-06-17T16:36:23-03:00" level=warning msg="The \"POSTGRES_URL\" variable is not set. Defaulting to a blank string."
+analytics-service-1  | Traceback (most recent call last):
+analytics-service-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+analytics-service-1  |     sys.exit(main())
+analytics-service-1  |              ^^^^^^
+analytics-service-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1524, in __call__
+analytics-service-1  |     return self.main(*args, **kwargs)
+analytics-service-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+analytics-service-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1445, in main
+analytics-service-1  |     rv = self.invoke(ctx)
+analytics-service-1  |          ^^^^^^^^^^^^^^^^
+analytics-service-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1308, in invoke
+analytics-service-1  |     return ctx.invoke(self.callback, **ctx.params)
+analytics-service-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+analytics-service-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 877, in invoke
+analytics-service-1  |     return callback(*args, **kwargs)
+analytics-service-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+analytics-service-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 410, in main
+analytics-service-1  |     run(
+analytics-service-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 577, in run
+analytics-service-1  |     server.run()
+analytics-service-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 65, in run
+analytics-service-1  |     return asyncio.run(self.serve(sockets=sockets))
+analytics-service-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+analytics-service-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+analytics-service-1  |     return runner.run(main)
+analytics-service-1  |            ^^^^^^^^^^^^^^^^
+analytics-service-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+analytics-service-1  |     return self._loop.run_until_complete(task)
+analytics-service-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+analytics-service-1  |   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+analytics-service-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 69, in serve
+analytics-service-1  |     await self._serve(sockets)
+analytics-service-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 76, in _serve
+analytics-service-1  |     config.load()
+analytics-service-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 434, in load
+analytics-service-1  |     self.loaded_app = import_from_string(self.app)
+analytics-service-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+analytics-service-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+analytics-service-1  |     module = importlib.import_module(module_str)
+analytics-service-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+analytics-service-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+analytics-service-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+analytics-service-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+analytics-service-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+analytics-service-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+analytics-service-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+analytics-service-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+analytics-service-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+analytics-service-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+analytics-service-1  |   File "/app/app/main.py", line 5, in <module>
+analytics-service-1  |     from app.core.config import settings
+analytics-service-1  |   File "/app/app/core/config.py", line 20, in <module>
+analytics-service-1  |     settings = Settings()
+analytics-service-1  |                ^^^^^^^^^^
+analytics-service-1  |   File "/usr/local/lib/python3.11/site-packages/pydantic_settings/main.py", line 140, in __init__
+analytics-service-1  |     super().__init__(
+analytics-service-1  |   File "/usr/local/lib/python3.11/site-packages/pydantic/main.py", line 176, in __init__
+analytics-service-1  |     self.__pydantic_validator__.validate_python(data, self_instance=self)
+analytics-service-1  | pydantic_core._pydantic_core.ValidationError: 1 validation error for Settings
+analytics-service-1  | database_url
+analytics-service-1  |   Extra inputs are not permitted [type=extra_forbidden, input_value='postgres://default:gXQCe...erceldb?sslmode=require', input_type=str]
+analytics-service-1  |     For further information visit https://errors.pydantic.dev/2.7/v/extra_forbidden
