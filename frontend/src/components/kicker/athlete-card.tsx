@@ -7,9 +7,15 @@ import { formatNumber } from '@/lib/utils'
 interface AthleteCardProps {
   athlete: Athlete
   showAlert?: boolean
+  analyticsData?: Record<string, any>
 }
 
-export function AthleteCard({ athlete }: AthleteCardProps) {
+export function AthleteCard({ athlete, analyticsData }: AthleteCardProps) {
+  const sessions = analyticsData?.total_sessions || '—'
+  const anomalies = analyticsData?.anomalies_count || '0'
+  const lastClass = analyticsData?.performance_status || '—'
+  const isQueda = lastClass === 'Queda de Desempenho'
+
   return (
     <Link
       href={`/atleta/${athlete.id}`}
@@ -24,48 +30,51 @@ export function AthleteCard({ athlete }: AthleteCardProps) {
         textDecoration: 'none',
         transition: 'background 120ms',
         position: 'relative',
+        flexWrap: 'wrap',
       }}
     >
       <Avatar id={athlete.id} initials={athlete.initials} profile={athlete.profile} size="md" />
 
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-          <span
-            style={{
-              fontSize: 13,
-              fontWeight: 500,
-              color: 'var(--text-primary)',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            ID: {athlete.id}
-          </span>
-          {athlete.hasAlert && (
-            <span className="k-dot k-dot--alert" />
-          )}
+      <div style={{ flex: 1, minWidth: 200, display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+            <span
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                color: 'var(--text-primary)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              ID: {athlete.id}
+            </span>
+            {athlete.hasAlert && (
+              <span className="k-dot k-dot--alert" />
+            )}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+              {athlete.position} · {athlete.group || 'N/A'}
+            </span>
+            <AthletePill profile={athlete.profile} label={athlete.profileLabel} />
+          </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
-            {athlete.position} · {athlete.group || 'N/A'}
-          </span>
-          <AthletePill profile={athlete.profile} label={athlete.profileLabel} />
-        </div>
-      </div>
 
-      <div style={{ textAlign: 'right', flexShrink: 0 }}>
-        <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.1 }}>
-          {formatNumber(athlete.speed, 1)}<span style={{ fontSize: 10, color: 'var(--text-subtle)', marginLeft: 2 }}>km/h</span>
-        </div>
-        <div
-          style={{
-            fontSize: 10,
-            color: athlete.speedDelta >= 0 ? 'var(--chart-baseline)' : 'var(--danger)',
-            marginTop: 2,
-          }}
-        >
-          {athlete.speedDelta >= 0 ? '+' : ''}{formatNumber(athlete.speedDelta, 1)}%
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, textAlign: 'right', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <span style={{ fontSize: 9, color: 'var(--text-subtle)', fontWeight: 500 }}>Sessões</span>
+            <span style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 500 }}>{sessions}</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <span style={{ fontSize: 9, color: 'var(--text-subtle)', fontWeight: 500 }}>Anomalias</span>
+            <span style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 500 }}>{anomalies}</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', minWidth: 100 }}>
+            <span style={{ fontSize: 9, color: 'var(--text-subtle)', fontWeight: 500 }}>Última Classificação</span>
+            <span style={{ fontSize: 11, color: isQueda ? 'var(--danger)' : 'var(--text-secondary)', fontWeight: 500 }}>{lastClass}</span>
+          </div>
         </div>
       </div>
     </Link>

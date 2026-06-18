@@ -2,28 +2,33 @@
 
 import { TopBar } from '@/components/kicker/top-bar'
 import { Avatar } from '@/components/kicker/avatar'
-import { LogOut, Bell, Shield, HelpCircle, ChevronRight, Moon } from 'lucide-react'
+import { LogOut, Bell, Shield, HelpCircle, ChevronRight, Moon, Sun, type LucideIcon } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
-
-const menuItems = [
-  {
-    group: 'PERFIL',
-    items: [
-      { icon: Bell,    label: 'Notificações',    desc: '2 alertas ativos' },
-      { icon: Moon,    label: 'Aparência',        desc: 'Dark (padrão)' },
-    ],
-  },
-  {
-    group: 'SISTEMA',
-    items: [
-      { icon: Shield,     label: 'Segurança',    desc: 'Alterar senha' },
-      { icon: HelpCircle, label: 'Ajuda',        desc: 'Central de suporte' },
-    ],
-  },
-]
+import { useTheme } from '@/components/ThemeProvider'
 
 export default function ConfigPage() {
   const { user, logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
+
+  const menuItems: {
+    group: string
+    items: { icon: LucideIcon; label: string; desc: string; onClick?: () => void }[]
+  }[] = [
+    {
+      group: 'PERFIL',
+      items: [
+  
+        { icon: theme === 'dark' ? Moon : Sun, label: 'Aparência',    desc: theme === 'dark' ? 'Escuro' : 'Claro', onClick: toggleTheme },
+      ],
+    },
+    {
+      group: 'SISTEMA',
+      items: [
+     
+        { icon: HelpCircle, label: 'Ajuda',     desc: 'https://github.com/Steel-Hard',},
+      ],
+    },
+  ]
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', width: '100%', background: 'var(--surface-1)' }}>
@@ -52,9 +57,9 @@ export default function ConfigPage() {
             <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-primary)', marginBottom: 3 }}>
               {user?.name || 'Analista Chefe'}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>São Paulo FC · Desempenho</div>
+           
             <div style={{ fontSize: 11, color: 'var(--primary-strong)', marginTop: 4 }}>
-              {user?.email || 'analista@saopaulofc.net'}
+              {user?.email || ''}
             </div>
           </div>
         </div>
@@ -71,9 +76,10 @@ export default function ConfigPage() {
                 overflow: 'hidden',
               }}
             >
-              {group.items.map(({ icon: Icon, label, desc }, i, arr) => (
+              {group.items.map(({ icon: Icon, label, desc, onClick }, i, arr) => (
                 <button
                   key={label}
+                  onClick={onClick}
                   style={{
                     width: '100%',
                     display: 'flex',
@@ -116,7 +122,7 @@ export default function ConfigPage() {
         {/* Version */}
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 10, color: 'var(--text-subtle)' }}>
-            Kicker v1.0.0 · São Paulo FC
+            Kicker v1.0.0
           </div>
           <div style={{ fontSize: 9, color: 'var(--border-muted)', marginTop: 3 }}>
             Design System v1
@@ -127,7 +133,7 @@ export default function ConfigPage() {
         <button
           onClick={logout}
           className="k-btn-outline"
-          style={{ width: '100%', color: 'var(--danger)', borderColor: 'rgba(226,75,74,0.3)', cursor: 'pointer' }}
+          style={{ width: '100%', color: 'var(--danger)', borderColor: 'var(--danger)', cursor: 'pointer' }}
         >
           <LogOut size={14} />
           Sair da conta

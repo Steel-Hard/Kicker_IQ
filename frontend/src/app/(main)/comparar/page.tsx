@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { X, Plus, Loader2 } from 'lucide-react'
 import { TopBar } from '@/components/kicker/top-bar'
 import { Avatar } from '@/components/kicker/avatar'
@@ -9,6 +9,8 @@ import { KickerRadarChart } from '@/components/kicker/radar-chart'
 import type { Athlete } from '@/lib/mock-data'
 import { formatNumber } from '@/lib/utils'
 import { useAthletes } from '@/context/AthleteContext'
+import { useAuth } from '@/context/AuthContext'
+import { apiService } from '@/lib/api'
 
 type MetricKey = 'speed' | 'sprintDistance' | 'weeklyLoad' | 'pse'
 
@@ -19,111 +21,16 @@ const metrics: { key: MetricKey; label: string; unit: string; higherIsBetter: bo
   { key: 'pse',           label: 'PSE',           unit: '',     higherIsBetter: false },
 ]
 
-function AthleteSlot({
-  athlete,
-  onSelect,
-  onRemove,
-  align,
-}: {
-  athlete?: Athlete
-  onSelect: () => void
-  onRemove: () => void
-  align: 'left' | 'right'
-}) {
-  if (!athlete) {
-    return (
-      <button
-        onClick={onSelect}
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 8,
-          padding: '20px 12px',
-          background: 'var(--surface-3)',
-          border: '1px dashed var(--border-emphasis)',
-          borderRadius: 10,
-          cursor: 'pointer',
-        }}
-      >
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: '50%',
-            border: '1px dashed var(--border-muted)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Plus size={14} color="var(--text-subtle)" />
-        </div>
-        <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 500 }}>
-          Selecionar
-        </span>
-      </button>
-    )
-  }
-
-  return (
-    <div
-      style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: align === 'left' ? 'flex-start' : 'flex-end',
-        padding: '12px',
-        background: 'var(--surface-2)',
-        border: '1px solid var(--border-default)',
-        borderRadius: 10,
-        position: 'relative',
-      }}
-    >
-      <button
-        onClick={onRemove}
-        style={{
-          position: 'absolute',
-          top: 6,
-          right: 6,
-          width: 18,
-          height: 18,
-          borderRadius: '50%',
-          border: '1px solid var(--border-emphasis)',
-          background: 'var(--surface-4)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-        }}
-      >
-        <X size={10} color="var(--text-subtle)" />
-      </button>
-      <Avatar id={athlete.id} initials={athlete.initials} profile={athlete.profile} size="md" />
-      <div style={{ marginTop: 8, textAlign: align === 'right' ? 'right' : 'left' }}>
-        <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.2 }}>
-          ID: {athlete.id}
-        </div>
-        <div style={{ marginTop: 3 }}>
-          <AthletePill profile={athlete.profile} label={athlete.profileLabel} />
-        </div>
-      </div>
-    </div>
-  )
-}
-
 function AthletePickerModal({
   athletes,
   onSelect,
   onClose,
-  excluded,
+  excludedIds,
 }: {
   athletes: Athlete[]
   onSelect: (a: Athlete) => void
   onClose: () => void
-  excluded?: string
+  excludedIds: string[]
 }) {
   return (
     <div
@@ -155,7 +62,7 @@ function AthletePickerModal({
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {athletes
-            .filter((a) => a.id !== excluded)
+            .filter((a) => !excludedIds.includes(a.id))
             .map((a) => (
               <button
                 key={a.id}
@@ -189,30 +96,80 @@ function AthletePickerModal({
 
 export default function CompararPage() {
   const { athletes, loading } = useAthletes()
+  const { token } = useAuth()
   
-  const [athlete1, setAthlete1] = useState<Athlete | undefined>()
-  const [athlete2, setAthlete2] = useState<Athlete | undefined>()
-  const [picker, setPicker] = useState<1 | 2 | null>(null)
+  const [selectedAthletes, setSelectedAthletes] = useState<Athlete[]>([])
+  const [showPicker, setShowPicker] = useState(false)
   const [tab, setTab] = useState<'Métricas' | 'IA' | 'Físico'>('Métricas')
+  const [radarData, setRadarData] = useState<any>(null)
+  const [loadingRadar, setLoadingRadar] = useState(false)
 
-  if (!athlete1 && !athlete2 && athletes.length >= 2) {
-    setAthlete1(athletes[0])
-    setAthlete2(athletes[1])
-  }
+  useEffect(() => {
+    if (athletes.length >= 2 && selectedAthletes.length === 0) {
+      setSelectedAthletes([athletes[0], athletes[1]])
+    }
+  }, [athletes, selectedAthletes.length])
+
+  useEffect(() => {
+    async function loadRadar() {
+      if (tab === 'Físico' && token && selectedAthletes.length > 0) {
+        setLoadingRadar(true)
+        try {
+          const ids = selectedAthletes.map(a => a.id)
+          const features = [
+            "Distance (m)",
+            "Sprint Distance (m)",
+            "Top Speed (kph)",
+            "Avg Speed (kph)",
+            "Workload",
+            "Duration (mins)",
+            "High Intensity Running (m)",
+            "Accelerations",
+            "Decelerations",
+            "No. of Sprints"
+          ]
+          const data = await apiService.analytics.getRadar(ids, features, token)
+          setRadarData(data)
+        } catch (err) {
+          console.error("Radar load failed", err)
+        } finally {
+          setLoadingRadar(false)
+        }
+      }
+    }
+    loadRadar()
+  }, [tab, token, selectedAthletes])
 
   function handleSelect(a: Athlete) {
-    if (picker === 1) setAthlete1(a)
-    if (picker === 2) setAthlete2(a)
+    if (selectedAthletes.length < 4) {
+      setSelectedAthletes([...selectedAthletes, a])
+    }
   }
 
-  function getWinner(key: MetricKey, higher: boolean): 1 | 2 | null {
-    if (!athlete1 || !athlete2) return null
-    const v1 = athlete1[key] as number
-    const v2 = athlete2[key] as number
-    if (v1 === v2) return null
-    if (higher) return v1 > v2 ? 1 : 2
-    return v1 < v2 ? 1 : 2
+  function handleRemove(id: string) {
+    setSelectedAthletes(selectedAthletes.filter(a => a.id !== id))
   }
+
+  function getBestIndices(key: MetricKey, higherIsBetter: boolean): number[] {
+    if (selectedAthletes.length === 0) return []
+    const values = selectedAthletes.map(a => a[key] as number)
+    const validValues = values.filter(v => v !== null && v !== undefined && !isNaN(v))
+    if (validValues.length === 0) return []
+    const bestValue = higherIsBetter ? Math.max(...validValues) : Math.min(...validValues)
+    return values.map((v, i) => v === bestValue ? i : -1).filter(i => i !== -1)
+  }
+
+  const chartData = useMemo(() => {
+    if (!radarData || !radarData.labels) return []
+    return radarData.labels.map((label: string, i: number) => {
+      const dataPoint: any = { subject: label }
+      radarData.datasets.forEach((dataset: any) => {
+        const id = dataset.label.replace('Atleta ', '')
+        dataPoint[id] = dataset.data[i]
+      })
+      return dataPoint
+    })
+  }, [radarData])
 
   if (loading && athletes.length === 0) {
     return (
@@ -232,36 +189,94 @@ export default function CompararPage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 14px', paddingBottom: 24 }}>
 
         {/* Athlete slots */}
-        <div style={{ display: 'flex', gap: 8 }}>
-          <AthleteSlot
-            athlete={athlete1}
-            onSelect={() => setPicker(1)}
-            onRemove={() => setAthlete1(undefined)}
-            align="left"
-          />
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 10,
-              color: 'var(--text-subtle)',
-              fontWeight: 500,
-              flexShrink: 0,
-            }}
-          >
-            VS
-          </div>
-          <AthleteSlot
-            athlete={athlete2}
-            onSelect={() => setPicker(2)}
-            onRemove={() => setAthlete2(undefined)}
-            align="right"
-          />
+        <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 8, scrollbarWidth: 'none' }}>
+          {selectedAthletes.map((athlete) => (
+            <div
+              key={athlete.id}
+              style={{
+                flex: '0 0 auto',
+                width: 140,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: '12px',
+                background: 'var(--surface-2)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 10,
+                position: 'relative',
+              }}
+            >
+              <button
+                onClick={() => handleRemove(athlete.id)}
+                style={{
+                  position: 'absolute',
+                  top: 6,
+                  right: 6,
+                  width: 18,
+                  height: 18,
+                  borderRadius: '50%',
+                  border: '1px solid var(--border-emphasis)',
+                  background: 'var(--surface-4)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={10} color="var(--text-subtle)" />
+              </button>
+              <Avatar id={athlete.id} initials={athlete.initials} profile={athlete.profile} size="md" />
+              <div style={{ marginTop: 8, textAlign: 'center' }}>
+                <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+                  ID: {athlete.id}
+                </div>
+                <div style={{ marginTop: 3 }}>
+                  <AthletePill profile={athlete.profile} label={athlete.profileLabel} />
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {selectedAthletes.length < 4 && (
+            <button
+              onClick={() => setShowPicker(true)}
+              style={{
+                flex: '0 0 auto',
+                width: 100,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                padding: '20px 12px',
+                background: 'var(--surface-3)',
+                border: '1px dashed var(--border-emphasis)',
+                borderRadius: 10,
+                cursor: 'pointer',
+              }}
+            >
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: '50%',
+                  border: '1px dashed var(--border-muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Plus size={14} color="var(--text-subtle)" />
+              </div>
+              <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 500 }}>
+                Adicionar
+              </span>
+            </button>
+          )}
         </div>
 
         {/* Tabs */}
-        {(athlete1 || athlete2) && (
+        {selectedAthletes.length > 0 && (
           <div
             style={{
               display: 'flex',
@@ -296,9 +311,9 @@ export default function CompararPage() {
         )}
 
         {/* Radar chart */}
-        {tab === 'Físico' && (athlete1 || athlete2) && (
+        {tab === 'Físico' && selectedAthletes.length > 0 && (
           <div>
-            <div className="k-section-label" style={{ marginBottom: 10 }}>RADAR — PERFIL FÍSICO</div>
+            <div className="k-section-label" style={{ marginBottom: 10 }}>RADAR — PERFORMANCE COMPARADA (Z-SCORE)</div>
             <div
               style={{
                 background: 'var(--surface-2)',
@@ -308,29 +323,37 @@ export default function CompararPage() {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
+                minHeight: 340,
+                position: 'relative'
               }}
             >
-              <KickerRadarChart
-                data1={athlete1?.radar}
-                data2={athlete2?.radar}
-                label1={athlete1 ? `ID ${athlete1.id.slice(-2)}` : undefined}
-                label2={athlete2 ? `ID ${athlete2.id.slice(-2)}` : undefined}
-              />
+              {loadingRadar ? (
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.1)' }}>
+                  <Loader2 className="animate-spin" size={24} />
+                </div>
+              ) : chartData.length > 0 ? (
+                <KickerRadarChart customChartData={chartData} />
+              ) : (
+                <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-subtle)', fontSize: 13 }}>Dados insuficientes para radar comparativo.</div>
+              )}
+            </div>
+            <div style={{ marginTop: 12, background: 'var(--surface-3)', padding: 12, borderRadius: 10, fontSize: 10, color: 'var(--text-subtle)', lineHeight: 1.4 }}>
+              * Os valores do radar representam o <strong>Z-Score</strong> (desvios padrão em relação à média do elenco). Um valor de 0 indica performance média, valores positivos indicam performance acima da média.
             </div>
           </div>
         )}
 
         {/* IA Comparison */}
-        {tab === 'IA' && (athlete1 || athlete2) && (
+        {tab === 'IA' && selectedAthletes.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div className="k-section-label">DISTRIBUIÇÃO DE PERFIL (IA)</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              {[athlete1, athlete2].map((a, idx) => (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+              {selectedAthletes.map((a, idx) => (
                 <div key={idx} style={{ background: 'var(--surface-2)', padding: 12, borderRadius: 10, border: '1px solid var(--border-default)' }}>
                   <div style={{ fontSize: 10, color: 'var(--text-subtle)', marginBottom: 8, textAlign: 'center' }}>
-                    {a ? `ID ${a.id}` : 'Nenhum Atleta'}
+                    ID {a.id}
                   </div>
-                  {a?.clusterScores ? (
+                  {a.clusterScores ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {Object.entries(a.clusterScores).map(([key, score]) => (
                         <div key={key}>
@@ -354,72 +377,36 @@ export default function CompararPage() {
         )}
 
         {/* Stats comparison */}
-        {tab === 'Métricas' && (athlete1 || athlete2) && (
+        {tab === 'Métricas' && selectedAthletes.length > 0 && (
           <div>
             <div className="k-section-label" style={{ marginBottom: 10 }}>COMPARATIVO — MÉTRICAS</div>
-            <div
-              style={{
-                background: 'var(--surface-2)',
-                border: '1px solid var(--border-default)',
-                borderRadius: 10,
-                overflow: 'hidden',
-              }}
-            >
-              {metrics.map((m, i) => {
-                const winner = getWinner(m.key, m.higherIsBetter)
-                const v1 = athlete1 ? (athlete1[m.key] as number) : null
-                const v2 = athlete2 ? (athlete2[m.key] as number) : null
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {metrics.map((m) => {
+                const bestIndices = getBestIndices(m.key, m.higherIsBetter)
 
                 return (
-                  <div
-                    key={m.key}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '12px 14px',
-                      borderBottom: i < metrics.length - 1 ? '1px solid var(--border-subtle)' : 'none',
-                    }}
-                  >
-                    <div
-                      style={{
-                        flex: 1,
-                        textAlign: 'left',
-                        fontSize: 14,
-                        fontWeight: 500,
-                        color: winner === 1 ? 'var(--primary-strong)' : winner === 2 ? 'var(--text-subtle)' : 'var(--text-primary)',
-                      }}
-                    >
-                      {v1 !== null
-                        ? m.key === 'weeklyLoad'
-                          ? v1.toLocaleString('pt-BR')
-                          : formatNumber(v1, 1)
-                        : '—'}
-                      {v1 !== null && m.unit && (
-                        <span style={{ fontSize: 9, color: 'var(--text-subtle)', marginLeft: 2 }}>{m.unit}</span>
-                      )}
-                    </div>
-
-                    <div style={{ textAlign: 'center', flexShrink: 0, width: 90 }}>
-                      <div style={{ fontSize: 10, color: 'var(--text-subtle)', fontWeight: 500 }}>{m.label}</div>
-                    </div>
-
-                    <div
-                      style={{
-                        flex: 1,
-                        textAlign: 'right',
-                        fontSize: 14,
-                        fontWeight: 500,
-                        color: winner === 2 ? 'var(--primary-strong)' : winner === 1 ? 'var(--text-subtle)' : 'var(--text-primary)',
-                      }}
-                    >
-                      {v2 !== null
-                        ? m.key === 'weeklyLoad'
-                          ? v2.toLocaleString('pt-BR')
-                          : formatNumber(v2, 1)
-                        : '—'}
-                      {v2 !== null && m.unit && (
-                        <span style={{ fontSize: 9, color: 'var(--text-subtle)', marginLeft: 2 }}>{m.unit}</span>
-                      )}
+                  <div key={m.key} style={{ background: 'var(--surface-2)', border: '1px solid var(--border-default)', borderRadius: 10, padding: '12px 14px' }}>
+                    <div style={{ fontSize: 10, color: 'var(--text-subtle)', fontWeight: 500, marginBottom: 8, textAlign: 'center' }}>{m.label}</div>
+                    <div style={{ display: 'flex', gap: 8, justifyContent: 'space-around' }}>
+                      {selectedAthletes.map((a, i) => {
+                        const isBest = bestIndices.includes(i)
+                        const val = a[m.key] as number
+                        return (
+                          <div key={a.id} style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: 14, fontWeight: 500, color: isBest ? 'var(--primary-strong)' : 'var(--text-primary)' }}>
+                              {val !== null && val !== undefined
+                                ? m.key === 'weeklyLoad'
+                                  ? val.toLocaleString('pt-BR')
+                                  : formatNumber(val, 1)
+                                : '—'}
+                              {val !== null && val !== undefined && m.unit && (
+                                <span style={{ fontSize: 9, color: 'var(--text-subtle)', marginLeft: 2 }}>{m.unit}</span>
+                              )}
+                            </div>
+                            <div style={{ fontSize: 9, color: 'var(--text-subtle)', marginTop: 2 }}>ID {a.id}</div>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
                 )
@@ -430,12 +417,12 @@ export default function CompararPage() {
 
       </div>
 
-      {picker !== null && (
+      {showPicker && (
         <AthletePickerModal
           athletes={athletes}
           onSelect={handleSelect}
-          onClose={() => setPicker(null)}
-          excluded={picker === 1 ? athlete2?.id : athlete1?.id}
+          onClose={() => setShowPicker(false)}
+          excludedIds={selectedAthletes.map(a => a.id)}
         />
       )}
     </div>

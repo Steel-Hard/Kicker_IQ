@@ -9,6 +9,7 @@ const {
   CLOUDNARY_NAME,
   MONGODB_URI,
   MODEL_SERVICE_URL,
+  ANALYTICS_SERVICE_URL,
   POSTGRES_URL,
 } = process.env;
 
@@ -25,5 +26,6 @@ export const config = {
   CLOUDNARY_NAME,
   MONGODB_URI,
   MODEL_SERVICE_URL: MODEL_SERVICE_URL || 'http://localhost:3002',
+  ANALYTICS_SERVICE_URL: ANALYTICS_SERVICE_URL || 'http://localhost:8000',
   POSTGRES_URL,
 };

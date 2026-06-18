@@ -83,7 +83,7 @@ export default function ImportarPage() {
   
   const [lookupId, setLookupId] = useState('')
   const [lookupDate, setLookupDate] = useState('')
-  const [lookupResult, setLookupResult] = useState<unknown>(null)
+  const [lookupResult, setLookupResult] = useState<Record<string, unknown> | Record<string, unknown>[] | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -242,7 +242,7 @@ export default function ImportarPage() {
             </button>
           </div>
           
-          {lookupResult && (
+          {lookupResult != null && (
             <div style={{ marginTop: 8, fontSize: 12, color: 'var(--success-text)', background: 'var(--success-bg)', padding: 12, borderRadius: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div style={{ fontWeight: 500 }}>
                 {Array.isArray(lookupResult) ? `${lookupResult.length} registros encontrados.` : 'Atleta localizado com sucesso.'}

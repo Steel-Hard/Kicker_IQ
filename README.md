@@ -61,8 +61,8 @@
 | Sprint                                    | Início     | Fim        | Status           | 📉 Burndown Chart                                        | Sprint Backlog/Review  |
 |:-----------------------------------------:|:----------:|:----------:|:----------------:|:---------------------------------------------------------:|:-----------------:|
 | 1 | 13/04/2026 | 30/04/2026 | 🟢 Concluído    | [Ver Gráfico](assets/burndown_1.png) |  [Ver](docs/sprint1.md) |
-| 2 | 04/05/2026 | 21/05/2026 | 🟠 Em andamento  | [Ver Gráfico](assets/burndown_2.png) |  [Ver](docs/sprint2.md) |
-| 3 | 25/05/2026 | 11/06/2026 | 🔴 A Fazer | [Ver Gráfico](assets/burndown_sp3.png) |  [Ver](docs/sprint3.md) |
+| 2 | 04/05/2026 | 21/05/2026 | 🟢 Concluído  | [Ver Gráfico](assets/burndown_2.png) |  [Ver](docs/sprint2.md) |
+| 3 | 25/05/2026 | 11/06/2026 | 🟢 Concluído | [Ver Gráfico](assets/burndown_3.png) |  [Ver](docs/sprint3.md) |
 
 ---
 ## Definition of Done
@@ -84,13 +84,13 @@ Quando os User Stories estiverem completos e entregues, o projeto estará pronto
 | Número | Recurso Funcional           | Síntese do Requisito                                         | Status          |
 |:------:|-----------------------------|:------------------------------------------------------------:|:---------------:|
 |  RF01  | Importação de Histórico           | Importar dados históricos de desempenho dos jogadores para o banco de dados                           | 🟢 <br> Concluído |
-|  RF02  | Atualização de Partidas        | Permitir a importação de novos dados conforme a ocorrência de novos jogos              | 🔴 <br>A Fazer |
+|  RF02  | Atualização de Partidas        | Permitir a importação de novos dados conforme a ocorrência de novos jogos              | 🟢 <br>Concluído |
 |  RF03  | Profiling com IA        | Identificar automaticamente perfis de jogadores          | 🟢 <br> Concluído |
-|  RF04  | Comparativo de Atletas    | Permitir a comparação entre jogadores para ajuste de treino e identificação de substitutos               | 🔴 <br>A Fazer |
+|  RF04  | Comparativo de Atletas    | Permitir a comparação entre jogadores para ajuste de treino e identificação de substitutos               | 🟢 <br>Concluído |
 |  RF05  | Detecção de Desempenho   | Detectar automaticamente quando o desempenho de um atleta está diferente do seu padrão histórico               | 🟢 <br>Concluído |
-|  RF06  | Emissão de Alertas    | Emitir alertas para a comissão técnica ao detectar anomalias ou quedas relevantes               | 🔴 <br>A Fazer |
+|  RF06  | Emissão de Alertas    | Emitir alertas para a comissão técnica ao detectar anomalias ou quedas relevantes               | 🟢 <br>Concluído |
 |  RF07  | Dashboards de Análise    | Apresentar indicadores de desempenho através de visualizações gráficas adequadas               | 🟢 <br>Concluído |
-|  RF08  | Acesso Mobile    | Garantir que as análises e dados estejam acessíveis através de dispositivos móveis               | 🔴 <br>A Fazer |
+|  RF08  | Acesso Mobile    | Garantir que as análises e dados estejam acessíveis através de dispositivos móveis               | 🟢 <br>Concluído |
 
 | Número  | Recurso Não-Funcional       | Síntese do Requisito                                         | Status          |
 |:-------:|-----------------------------|:------------------------------------------------------------:|:---------------:|
@@ -105,7 +105,7 @@ Quando os User Stories estiverem completos e entregues, o projeto estará pronto
 
  1. CLONE DOS PROJETOS (ORQUESTRADOR  E MICROSERVICES)
  ``` BASH
- git clone https://github.com/Steel-Hard/Kicker_IQ && cd Kicker_IQ && for repo in https://github.com/Steel-Hard/Kicker_IQ-model-kmeans https://github.com/Steel-Hard/Kicker_IQ-model-service; do git clone "$repo"; done
+ git clone https://github.com/Steel-Hard/Kicker_IQ && cd Kicker_IQ && for repo in https://github.com/Steel-Hard/Kicker_IQ-model-kmeans https://github.com/Steel-Hard/Kicker_IQ-model-service https://github.com/Steel-Hard/analise_atletas_kicker_v6; do git clone "$repo"; done
  ```
  2. RODAR DOCKER
  ```BASH

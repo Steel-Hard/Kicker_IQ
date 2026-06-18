@@ -12,7 +12,12 @@ if (!connectionString) {
 
 export const pool = new Pool({
   connectionString,
-  ssl: false,
+  ssl: connectionString.includes('neon.tech') ? { rejectUnauthorized: false } : false,
+});
+
+// Handler for idle client errors to prevent process crash
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle database client', err);
 });
 
 export const query = (text: string, params?: any[]) => pool.query(text, params);

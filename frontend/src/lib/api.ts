@@ -1,3 +1,5 @@
+import type { Athlete } from "./mock-data";
+
 /**
  * API Service layer to decouple components from direct fetch calls.
  * Uses NEXT_PUBLIC_API_URL environment variable.
@@ -56,7 +58,7 @@ export const apiService = {
   // Model specific methods
   model: {
     predict: (metrics: Record<string, unknown>, token: string) => 
-      request<{ clusterName: string; [key: string]: unknown }>("/model/predict", { 
+      request<{ clusterName: string; confidence: string; allScores: Array<{ cluster: string; score: string }>; [key: string]: unknown }>("/model/predict", { 
         method: "POST", 
         body: JSON.stringify(metrics),
         headers: { "Authorization": `Bearer ${token}` }
@@ -66,5 +68,86 @@ export const apiService = {
         method: "POST", // The backend route is POST
         headers: { "Authorization": `Bearer ${token}` }
       }),
-  }
+    getTeamClassification: (token: string) =>
+      apiService.get<any>("/model/team-classification", token),
+    getAthleteTimeline: (id: string, token: string) =>
+      apiService.get<any>(`/model/athlete/${id}/timeline`, token),
+  },
+
+  // Dashboard specific methods
+  dashboard: {
+    getSummary: (token: string) => apiService.get<{
+      squadRadarAvg: Array<{ subject: string; A: number }>;
+      riskData: Array<{ name: string; load: number; pse: number; z: number }>;
+      loadEvolution: Array<{ jornada: string; carga: number }>;
+      topPerformers: Array<Athlete & { performanceScore: number }>;
+      teamStats: {
+        avgSpeed: number;
+        avgSprintDist: number;
+        avgLoad: number;
+        avgPse: number;
+        speedDelta: number;
+        sprintDelta: number;
+        loadDelta: number;
+        pseDelta: number;
+        alertCount: number;
+        lastMatch: {
+          date: string;
+          jornada: string;
+          result: string;
+          score: string;
+          opponent: string;
+        };
+      };
+    }>("/dashboard/summary", token),
+  },
+
+  // Alert specific methods
+  alerts: {
+    getAll: (token: string, filters?: { status?: string; severity?: string; athleteId?: string }) => {
+      const params = new URLSearchParams();
+      if (filters?.status) params.append("status", filters.status);
+      if (filters?.severity) params.append("severity", filters.severity);
+      if (filters?.athleteId) params.append("athleteId", filters.athleteId);
+      const qs = params.toString();
+      return apiService.get<Record<string, unknown>[]>(`/alerts${qs ? `?${qs}` : ""}`, token);
+    },
+    getCount: (token: string) =>
+      apiService.get<{ count: number }>("/alerts/count", token),
+    getByAthlete: (id: string, token: string) =>
+      apiService.get<Record<string, unknown>[]>(`/alerts/athlete/${id}`, token),
+    create: (data: Record<string, unknown>, token: string) =>
+      request<Record<string, unknown>>("/alerts", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Authorization": `Bearer ${token}` },
+      }),
+    resolve: (id: string, token: string) =>
+      request<Record<string, unknown>>(`/alerts/${id}/resolve`, {
+        method: "PATCH",
+        headers: { "Authorization": `Bearer ${token}` },
+      }),
+    delete: (id: string, token: string) =>
+      request<{ message: string }>(`/alerts/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` },
+      }),
+  },
+
+  // Analytics specific methods (Python microservice)
+  analytics: {
+    getStats: (token: string) => apiService.get<any>("/analytics/stats", token),
+    getAtletas: (token: string) => apiService.get<any[]>("/analytics/atletas", token),
+    getRadar: (athleteIds: string[], features: string[], token: string) =>
+      request<any>("/analytics/radar", {
+        method: "POST",
+        body: JSON.stringify({ athleteIds, features }),
+        headers: { "Authorization": `Bearer ${token}` }
+      }),
+    getHistory: (athleteId: string, token: string) =>
+      apiService.get<any>(`/analytics/history/${athleteId}`, token),
+    getSimilarity: (athleteId: string, token: string, topN: number = 3) =>
+      apiService.get<any>(`/analytics/similarity/${athleteId}?topN=${topN}`, token),
+  },
 };
+

@@ -32,6 +32,21 @@ services:
     depends_on:
       - postgres-db
 
+  # MicroserviÃ§o de AnÃ¡lise de Atletas (Python / Isolation Forest)
+  analytics-service:
+    build:
+      context: ./analise_atletas_kicker_v6
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/
+      - DATABASE_NAME=analise_atletas
+    volumes:
+      - ./analise_atletas_kicker_v6:/app
+    depends_on:
+      - mongodb
+
   # Gateway / Backend Principal
   backend:
     build:
